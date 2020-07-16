@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html xmlns:og="http://ogp.me/ns#" lang="fr"><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252">
+	<meta charset="iso-8859-1">
+	<title>EMF/Xtext - Créer son propre DSL étape par étape</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="generator" content="developpez-com">
+	<meta name="description" content="Ce tutoriel explique comment créer un langage de description de site web et comment le doter d'un générateur de code">
+	<meta property="og:type" content="article">
+	<meta property="og:title" content="EMF/Xtext - Créer son propre DSL étape par étape">
+	<meta property="og:image" content="https://www.developpez.com/template/images/logo.png">
+	<meta property="og:url" content="http://olegoaer.developpez.com/tutos/model/xtext/wdl/">
+	<meta property="og:locale" content="fr_FR">
+	<meta property="og:site_name" content="Developpez.com">
+	<meta property="twitter:card" content="summary">
+	<meta property="twitter:url" content="http://olegoaer.developpez.com/tutos/model/xtext/wdl/">
+	<meta property="twitter:description" content="Ce tutoriel explique comment créer un langage de description de site web et comment le doter d'un générateur de code">
+	<meta property="twitter:title" content="EMF/Xtext - Créer son propre DSL étape par étape">
+	<meta property="twitter:image" content="https://www.developpez.com/template/images/logo.png">
+	<script type="text/javascript" async="" src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/ga.js"></script><script type="text/javascript" src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/jquery-1.js"></script>
+	<script async="" type="text/javascript" src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/a"></script>
+	<script async="async" src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/gpt.js"></script>
+	<script>
+		var googletag = googletag || {};
+		googletag.cmd = googletag.cmd || [];
+	</script>
+	<script async="" src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/adsbygoogle.js"></script>
+	<link rel="shortcut icon" type="image/x-icon" href="https://olegoaer.developpez.com/template/favicon.ico">
+	<link rel="image_src" href="https://www.developpez.com/facebook-icon.png">
+	<link rel="stylesheet" type="text/css" href="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/gabarit.css">
+	<link rel="stylesheet" type="text/css" media="print" href="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/printer.css">
+	<link rel="stylesheet" type="text/css" href="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/gabarit-mobile.css">
+	<script type="text/javascript" src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/gabarit-mobile.js"></script>
+	<link rel="stylesheet" type="text/css" media="screen" href="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/developpez-kit-generation.css">
+	<link rel="stylesheet" type="text/css" media="screen" href="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/code.css">
+	<link rel="stylesheet" type="text/css" media="screen" href="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/lightbox.css">
+	<script type="text/javascript" src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/developpez-kit-generation.js"></script>
+	<script type="text/javascript" src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/lightbox.js"></script>
+	<script type="text/javascript" src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/fonctions-kit.js"></script>
+	<meta name="author" content="Olivier Le Goaer">
+	<!--[if lt IE 7]>
+	<script src="/template/ie7/IE7.js" type="text/javascript"></script>
+	<![endif]-->
+
+	<!--[if IE 6]>
+	<link rel="stylesheet" type="text/css" href="/template/gabarit-ie6.css" />
+	<![endif]-->
+
+	<!--[if IE 7]>
+	<link rel="stylesheet" type="text/css" href="/template/gabarit-ie7.css" />
+	<![endif]-->
+
+	<!--[if lt IE 9]>
+	<script type="text/javascript" src="/template/kit/html5_ie.js"></script>
+	<![endif]-->
+	<!--[if IE 9]><link rel="stylesheet" type="text/css" href="/template/kit/ie9.css" /><![endif]-->
+	<!--[if IE 8]><link rel="stylesheet" type="text/css" href="/template/kit/ie8.css" /><![endif]-->
+	<!--[if lt IE 9]><link rel="stylesheet" type="text/css" href="/template/kit/ie.css" /><![endif]-->
+	<!--[if IE 7]><link rel="stylesheet" type="text/css" href="/template/kit/ie7.css" /><![endif]-->
+	<!--[if lte IE 6]><link rel="stylesheet" type="text/css" href="/template/kit/ie6.css" /><![endif]-->
+	<!--[if lt IE 9]><script type="text/javascript" src="/template/kit/html5_ie.js"></script><![endif]-->
+
+<style type="text/css">.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q{display:block!important;border:1px solid #cdcfd2!important;background-color:#fff!important;color:#373a3d!important;width:100vw!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-24GeGuJgk9LrMLp7qVvlyz{background:#6a7e89!important;color:#fff!important;padding:10px!important;font-size:18px!important;font-family:sans-serif!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-KVjdulkCFfUZps29EbgAC{background:#f3f6f8!important;border-bottom:1px solid #cdcfd2!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-KVjdulkCFfUZps29EbgAC>*{margin-right:10px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1OeZ2PQ98oAp6Vc5mMc6V5{list-style:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-vCwYmWF_l83ScZBrGnRoi,.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1OeZ2PQ98oAp6Vc5mMc6V5{margin:0!important;padding:0!important;width:100%!important;display:block!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-vCwYmWF_l83ScZBrGnRoi:not(:last-child){border-bottom:1px solid #cdcfd2!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1XQZkb-FlHWABUp4_uShaZ{color:inherit!important;cursor:pointer!important;width:100%!important;display:inline-block!important;margin:10px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1XTzMvb2XKitWz0mFLlyyp{margin:5px!important;display:block!important;width:auto!important;white-space:pre!important;overflow-x:scroll!important;background:inherit!important;color:inherit!important;font-family:monospace}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1XTzMvb2XKitWz0mFLlyyp:not(.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-39QUvFFn5B7GMcqMQkOXZ3){display:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-295DY3nO0DbJWMsOqmjCli{background:#f5f5f5!important;color:#5a5a5a!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1aQZwu6CUzAf2zUcI7tg0Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-295DY3nO0DbJWMsOqmjCli{display:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-38EPFyKXMtoP12rPlmrHxs{background:#e6f7ff!important;color:#006097!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3W4ZnQjhoGfT1gTNcqRXdi .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-38EPFyKXMtoP12rPlmrHxs{display:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-HGYnfzlmgOZ-l7eANhQe_{background:#fff3ea!important;color:#993a00!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-24e52A11B1UIErbKHtBmqc .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-HGYnfzlmgOZ-l7eANhQe_{display:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-jji74ZzulHScD0OAD_G7h{background:#fef2f1!important;color:#b10823!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-28jAOA7cDee-95LvwGsOP- .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-jji74ZzulHScD0OAD_G7h{display:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu{background-color:#0073b1!important;border:0!important;border-radius:2px!important;box-sizing:border-box!important;color:#fff!important;cursor:pointer!important;display:inline-block!important;font-family:-apple-system,system-ui,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Fira Sans,Ubuntu,Oxygen,Oxygen Sans,Cantarell,Droid Sans,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Lucida Grande,Helvetica,Arial,sans-serif!important;font-weight:600!important;overflow:hidden!important;outline-width:2px!important;position:relative!important;text-align:center!important;text-decoration:none!important;vertical-align:middle!important;white-space:nowrap!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu:disabled{cursor:not-allowed!important;opacity:.7!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu:not(:disabled):not(.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1zhzkayakwEXovVYUbq5Gy):hover{background-color:#006097!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu:not(:disabled):not(.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1zhzkayakwEXovVYUbq5Gy):active{background-color:#004b7c!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1zhzkayakwEXovVYUbq5Gy{background-color:#fff!important;color:#0073b1!important;box-shadow:inset 0 0 0 1px rgba(0,0,0,.3)!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1zhzkayakwEXovVYUbq5Gy:not(:disabled):hover{color:#006097!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1zhzkayakwEXovVYUbq5Gy:not(:disabled):active{color:#004b7c!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu>xdoor-icon{display:inline-block!important;height:100%!important;vertical-align:top!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu>xdoor-icon>svg{pointer-events:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-7inSbaAsvG5bf7w6lJTEr{font-size:10px!important;height:16px!important;line-height:16px!important;padding:0 6px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-7inSbaAsvG5bf7w6lJTEr>xdoor-icon{margin-left:-6px!important;margin-right:3px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-7inSbaAsvG5bf7w6lJTEr>xdoor-icon>svg{height:16px!important;width:16px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-7inSbaAsvG5bf7w6lJTEr.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-2lrEjt4SOTxqrYsv1piG4c>xdoor-icon{margin-right:-6px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu,.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3uCBSbQNVNf2QjqHe1rfb6{font-size:11px!important;height:20px!important;line-height:20px!important;padding:0 7px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3uCBSbQNVNf2QjqHe1rfb6>xdoor-icon,.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu>xdoor-icon{margin-left:-7px!important;margin-right:3.5px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3uCBSbQNVNf2QjqHe1rfb6>xdoor-icon>svg,.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu>xdoor-icon>svg{height:20px!important;width:20px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3uCBSbQNVNf2QjqHe1rfb6.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-2lrEjt4SOTxqrYsv1piG4c>xdoor-icon,.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-2lrEjt4SOTxqrYsv1piG4c>xdoor-icon{margin-right:-7px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-21Smv9YG-5V6M6KP-5v2WG{font-size:14px!important;height:24px!important;line-height:24px!important;padding:0 12px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-21Smv9YG-5V6M6KP-5v2WG>xdoor-icon{margin-left:-12px!important;margin-right:6px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-21Smv9YG-5V6M6KP-5v2WG>xdoor-icon>svg{height:24px!important;width:24px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-21Smv9YG-5V6M6KP-5v2WG.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-2lrEjt4SOTxqrYsv1piG4c>xdoor-icon{margin-right:-12px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1TGdQUTLZdNG4R87OfAB-q{font-size:16px!important;height:32px!important;line-height:32px!important;padding:0 16px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1TGdQUTLZdNG4R87OfAB-q>xdoor-icon{margin-left:-16px!important;margin-right:8px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1TGdQUTLZdNG4R87OfAB-q>xdoor-icon>svg{height:32px!important;width:32px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1TGdQUTLZdNG4R87OfAB-q.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-2lrEjt4SOTxqrYsv1piG4c>xdoor-icon{margin-right:-16px!important}</style><style type="text/css">.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q{display:block!important;border:1px solid #cdcfd2!important;background-color:#fff!important;color:#373a3d!important;width:100vw!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-24GeGuJgk9LrMLp7qVvlyz{background:#6a7e89!important;color:#fff!important;padding:10px!important;font-size:18px!important;font-family:sans-serif!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-KVjdulkCFfUZps29EbgAC{background:#f3f6f8!important;border-bottom:1px solid #cdcfd2!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-KVjdulkCFfUZps29EbgAC>*{margin-right:10px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1OeZ2PQ98oAp6Vc5mMc6V5{list-style:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-vCwYmWF_l83ScZBrGnRoi,.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1OeZ2PQ98oAp6Vc5mMc6V5{margin:0!important;padding:0!important;width:100%!important;display:block!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-vCwYmWF_l83ScZBrGnRoi:not(:last-child){border-bottom:1px solid #cdcfd2!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1XQZkb-FlHWABUp4_uShaZ{color:inherit!important;cursor:pointer!important;width:100%!important;display:inline-block!important;margin:10px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1XTzMvb2XKitWz0mFLlyyp{margin:5px!important;display:block!important;width:auto!important;white-space:pre!important;overflow-x:scroll!important;background:inherit!important;color:inherit!important;font-family:monospace}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1XTzMvb2XKitWz0mFLlyyp:not(.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-39QUvFFn5B7GMcqMQkOXZ3){display:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-295DY3nO0DbJWMsOqmjCli{background:#f5f5f5!important;color:#5a5a5a!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1aQZwu6CUzAf2zUcI7tg0Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-295DY3nO0DbJWMsOqmjCli{display:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-38EPFyKXMtoP12rPlmrHxs{background:#e6f7ff!important;color:#006097!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3W4ZnQjhoGfT1gTNcqRXdi .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-38EPFyKXMtoP12rPlmrHxs{display:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-HGYnfzlmgOZ-l7eANhQe_{background:#fff3ea!important;color:#993a00!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-24e52A11B1UIErbKHtBmqc .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-HGYnfzlmgOZ-l7eANhQe_{display:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-jji74ZzulHScD0OAD_G7h{background:#fef2f1!important;color:#b10823!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-28jAOA7cDee-95LvwGsOP- .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-jji74ZzulHScD0OAD_G7h{display:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu{background-color:#0073b1!important;border:0!important;border-radius:2px!important;box-sizing:border-box!important;color:#fff!important;cursor:pointer!important;display:inline-block!important;font-family:-apple-system,system-ui,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Fira Sans,Ubuntu,Oxygen,Oxygen Sans,Cantarell,Droid Sans,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Lucida Grande,Helvetica,Arial,sans-serif!important;font-weight:600!important;overflow:hidden!important;outline-width:2px!important;position:relative!important;text-align:center!important;text-decoration:none!important;vertical-align:middle!important;white-space:nowrap!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu:disabled{cursor:not-allowed!important;opacity:.7!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu:not(:disabled):not(.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1zhzkayakwEXovVYUbq5Gy):hover{background-color:#006097!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu:not(:disabled):not(.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1zhzkayakwEXovVYUbq5Gy):active{background-color:#004b7c!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1zhzkayakwEXovVYUbq5Gy{background-color:#fff!important;color:#0073b1!important;box-shadow:inset 0 0 0 1px rgba(0,0,0,.3)!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1zhzkayakwEXovVYUbq5Gy:not(:disabled):hover{color:#006097!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1zhzkayakwEXovVYUbq5Gy:not(:disabled):active{color:#004b7c!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu>xdoor-icon{display:inline-block!important;height:100%!important;vertical-align:top!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu>xdoor-icon>svg{pointer-events:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-7inSbaAsvG5bf7w6lJTEr{font-size:10px!important;height:16px!important;line-height:16px!important;padding:0 6px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-7inSbaAsvG5bf7w6lJTEr>xdoor-icon{margin-left:-6px!important;margin-right:3px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-7inSbaAsvG5bf7w6lJTEr>xdoor-icon>svg{height:16px!important;width:16px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-7inSbaAsvG5bf7w6lJTEr.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-2lrEjt4SOTxqrYsv1piG4c>xdoor-icon{margin-right:-6px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu,.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3uCBSbQNVNf2QjqHe1rfb6{font-size:11px!important;height:20px!important;line-height:20px!important;padding:0 7px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3uCBSbQNVNf2QjqHe1rfb6>xdoor-icon,.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu>xdoor-icon{margin-left:-7px!important;margin-right:3.5px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3uCBSbQNVNf2QjqHe1rfb6>xdoor-icon>svg,.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu>xdoor-icon>svg{height:20px!important;width:20px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3uCBSbQNVNf2QjqHe1rfb6.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-2lrEjt4SOTxqrYsv1piG4c>xdoor-icon,.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-2lrEjt4SOTxqrYsv1piG4c>xdoor-icon{margin-right:-7px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-21Smv9YG-5V6M6KP-5v2WG{font-size:14px!important;height:24px!important;line-height:24px!important;padding:0 12px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-21Smv9YG-5V6M6KP-5v2WG>xdoor-icon{margin-left:-12px!important;margin-right:6px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-21Smv9YG-5V6M6KP-5v2WG>xdoor-icon>svg{height:24px!important;width:24px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-21Smv9YG-5V6M6KP-5v2WG.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-2lrEjt4SOTxqrYsv1piG4c>xdoor-icon{margin-right:-12px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1TGdQUTLZdNG4R87OfAB-q{font-size:16px!important;height:32px!important;line-height:32px!important;padding:0 16px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1TGdQUTLZdNG4R87OfAB-q>xdoor-icon{margin-left:-16px!important;margin-right:8px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1TGdQUTLZdNG4R87OfAB-q>xdoor-icon>svg{height:32px!important;width:32px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1TGdQUTLZdNG4R87OfAB-q.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-2lrEjt4SOTxqrYsv1piG4c>xdoor-icon{margin-right:-16px!important}</style><link rel="preload" href="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/integrator.js" as="script"><script type="text/javascript" src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/integrator.js"></script><link rel="preload" href="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/integrator_002.js" as="script"><script type="text/javascript" src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/integrator_002.js"></script><script src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/pubads_impl_modern_2019062401.js" async=""></script></head>
+<body>
+<header>
+
+<div id="gabarit_b1">
+	<div id="gabarit-barreRecherche" style="display:none;"><form action="https://www.google.fr" target="_blank">
+  <div>
+    <input type="hidden" name="cx" value="partner-pub-8110924381468607:6449306375">
+    <input type="hidden" name="ie" value="ISO-8859-1">
+    <input type="text" name="q" size="12">
+    <input type="submit" name="sa" value="Rechercher">
+  </div>
+</form></div>
+<div id="gabarit-new-logo" role="gabarit-accueil">
+	<a href="https://www.developpez.com/"><img src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/logo-dvp-h55.png" width="48" height="55"></a>
+	<a href="https://www.developpez.com/"><span class="dvp"></span></a>
+	<span class="triangle"></span>
+</div>
+<div id="gabarit_recherche"><!--<div class="gabarit-btn-menu profil" role="gabarit-profil"></div>-->
+	<div class="gabarit-btn-menu contacts" role="gabarit-contacts"></div><div class="gabarit-btn-menu recherche" role="gabarit-recherche"></div>
+</div>
+
+<div id="gabarit_superieur">
+	<nav>
+	<ul>
+		<li><a href="https://www.developpez.net/forums/" title="">Forums</a></li>
+		<li><a href="https://general.developpez.com/cours/" title="">Tutoriels</a></li>
+		<li><a href="https://magazine.developpez.com/" title="">Magazine</a></li>
+		<li><a href="https://general.developpez.com/faq/" title="">FAQ</a></li>
+		<li><a href="https://www.developpez.net/forums/blogs/" title="">Blogs</a></li>
+		<li><a href="https://chat.developpez.com/" title="">Chat</a></li>
+		<li><a href="https://www.developpez.com/newsletter/">Newsletter</a></li>
+		<li><a href="https://etudes.developpez.com/">Études</a></li>
+		<li><a href="https://emploi.developpez.com/" title="">Emploi</a></li>
+		<li><a href="https://club.developpez.com/">Club</a></li>
+	</ul>
+	</nav>
+</div></div>
+
+<nav>
+
+<div id="gabarit_mobile" style="" class="longMenu">
+	<div><a href="https://www.developpez.com/"><img src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/logo-mobile.png" alt="" height="60"></a></div>
+	<div>
+		<p>Developpez.com</p>
+		<p>Java</p>
+	</div>
+
+	<div class="nav nav-pills nav-justified" style="white-space: nowrap; width: calc(100% - 40px);">
+					<a href="https://java.developpez.com/" class="nav-item nav-link"> &nbsp;Rubrique Java&nbsp; </a>
+			<a href="https://www.developpez.net/forums/f6/java/" class="nav-item nav-link"> &nbsp;Forum Java&nbsp; </a>
+			
+	</div>
+	
+	<div class="nav nav-pills nav-justified" style="width: calc(100% - 40px); margin: 0 auto 6px;">
+		<a href="https://www.developpez.com/" class="nav-item nav-link"><i class="glyphicon glyphicon-home" style="top:0;"></i>&nbsp; Accueil</a>
+		<a href="https://www.developpez.net/forums/" class="nav-item nav-link"><i class="glyphicon glyphicon-comment" style="top:1px;"></i>&nbsp; Forums</a>
+			
+		<span class="nav-item nav-link" style="white-space:nowrap;" data-toggle="collapse" href="#gabarit_menu_mobile" role="button" aria-expanded="false"><i class="glyphicon glyphicon-th" style="top:0;"></i>&nbsp; Rubriques</span>
+	</div>
+</div>
+<div id="gabarit_mobile_fin"></div>
+
+<div class="collapse multi-collapse" id="gabarit_menu_mobile">
+	<p>Choisissez la catégorie, puis la rubrique :</p>
+	<ul>
+					<li>
+				<a href="https://www.developpez.com/" data-idrub="1" data-niv="1">Accueil</a>
+							</li>
+					<li>
+				<a href="https://alm.developpez.com/" data-idrub="42" data-niv="1">ALM</a>
+									<ul class="gabarit_sousmenu">
+						<li>
+							<a href="https://alm.developpez.com/" data-idrub="42" data-niv="2">
+								<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;ALM
+							</a>
+						</li>
+													<li>
+								<a href="https://merise.developpez.com/" data-idrub="43" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Merise
+								</a>
+							</li>
+													<li>
+								<a href="https://uml.developpez.com/" data-idrub="12" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;UML
+								</a>
+							</li>
+											</ul>
+							</li>
+					<li>
+				<a href="https://java.developpez.com/" data-idrub="4" data-niv="1">Java</a>
+									<ul class="gabarit_sousmenu">
+						<li>
+							<a href="https://java.developpez.com/" data-idrub="4" data-niv="2">
+								<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Java
+							</a>
+						</li>
+													<li>
+								<a href="https://javaweb.developpez.com/" data-idrub="97" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Java Web
+								</a>
+							</li>
+													<li>
+								<a href="https://spring.developpez.com/" data-idrub="87" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Spring
+								</a>
+							</li>
+													<li>
+								<a href="https://android.developpez.com/" data-idrub="95" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Android
+								</a>
+							</li>
+													<li>
+								<a href="https://eclipse.developpez.com/" data-idrub="55" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Eclipse
+								</a>
+							</li>
+													<li>
+								<a href="https://netbeans.developpez.com/" data-idrub="66" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;NetBeans
+								</a>
+							</li>
+											</ul>
+							</li>
+					<li>
+				<a href="https://dotnet.developpez.com/" data-idrub="20" data-niv="1">.NET</a>
+									<ul class="gabarit_sousmenu">
+						<li>
+							<a href="https://dotnet.developpez.com/" data-idrub="20" data-niv="2">
+								<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Microsoft DotNET
+							</a>
+						</li>
+													<li>
+								<a href="https://visualstudio.developpez.com/" data-idrub="84" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Visual Studio
+								</a>
+							</li>
+													<li>
+								<a href="https://dotnet.developpez.com/aspnet/" data-idrub="83" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;ASP.NET
+								</a>
+							</li>
+													<li>
+								<a href="https://dotnet.developpez.com/csharp/" data-idrub="81" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;C#
+								</a>
+							</li>
+													<li>
+								<a href="https://dotnet.developpez.com/vbnet/" data-idrub="82" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;VB.NET
+								</a>
+							</li>
+													<li>
+								<a href="https://windowsphone.developpez.com/" data-idrub="105" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Windows Phone
+								</a>
+							</li>
+													<li>
+								<a href="https://windows-azure.developpez.com/" data-idrub="107" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Microsoft Azure
+								</a>
+							</li>
+											</ul>
+							</li>
+					<li>
+				<a href="https://web.developpez.com/" data-idrub="8" data-niv="1">Dév. Web</a>
+									<ul class="gabarit_sousmenu">
+						<li>
+							<a href="https://web.developpez.com/" data-idrub="8" data-niv="2">
+								<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Développement Web
+							</a>
+						</li>
+													<li>
+								<a href="https://ajax.developpez.com/" data-idrub="85" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;AJAX
+								</a>
+							</li>
+													<li>
+								<a href="https://apache.developpez.com/" data-idrub="71" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Apache
+								</a>
+							</li>
+													<li>
+								<a href="https://asp.developpez.com/" data-idrub="10" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;ASP
+								</a>
+							</li>
+													<li>
+								<a href="https://css.developpez.com/" data-idrub="51" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;CSS
+								</a>
+							</li>
+													<li>
+								<a href="https://dart.developpez.com/" data-idrub="125" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Dart
+								</a>
+							</li>
+													<li>
+								<a href="https://flash.developpez.com/" data-idrub="41" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Flash / Flex
+								</a>
+							</li>
+													<li>
+								<a href="https://javascript.developpez.com/" data-idrub="45" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;JavaScript
+								</a>
+							</li>
+													<li>
+								<a href="https://nodejs.developpez.com/" data-idrub="141" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;NodeJS
+								</a>
+							</li>
+													<li>
+								<a href="https://php.developpez.com/" data-idrub="9" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;PHP
+								</a>
+							</li>
+													<li>
+								<a href="https://ruby.developpez.com/" data-idrub="53" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Ruby &amp; Rails
+								</a>
+							</li>
+													<li>
+								<a href="https://typescript.developpez.com/" data-idrub="127" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;TypeScript
+								</a>
+							</li>
+													<li>
+								<a href="https://web-semantique.developpez.com/" data-idrub="111" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Web sémantique
+								</a>
+							</li>
+													<li>
+								<a href="https://webmarketing.developpez.com/" data-idrub="80" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Webmarketing
+								</a>
+							</li>
+													<li>
+								<a href="https://xhtml.developpez.com/" data-idrub="50" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;(X)HTML
+								</a>
+							</li>
+											</ul>
+							</li>
+					<li>
+				<a href="https://edi.developpez.com/" data-idrub="90" data-niv="1">EDI</a>
+									<ul class="gabarit_sousmenu">
+						<li>
+							<a href="https://edi.developpez.com/" data-idrub="90" data-niv="2">
+								<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;EDI
+							</a>
+						</li>
+													<li>
+								<a href="https://4d.developpez.com/" data-idrub="39" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;4D
+								</a>
+							</li>
+													<li>
+								<a href="https://delphi.developpez.com/" data-idrub="2" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Delphi
+								</a>
+							</li>
+													<li>
+								<a href="https://eclipse.developpez.com/" data-idrub="55" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Eclipse
+								</a>
+							</li>
+													<li>
+								<a href="https://jetbrains.developpez.com/" data-idrub="144" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;JetBrains
+								</a>
+							</li>
+													<li>
+								<a href="https://labview.developpez.com/" data-idrub="72" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;LabVIEW
+								</a>
+							</li>
+													<li>
+								<a href="https://netbeans.developpez.com/" data-idrub="66" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;NetBeans
+								</a>
+							</li>
+													<li>
+								<a href="https://matlab.developpez.com/" data-idrub="58" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;MATLAB
+								</a>
+							</li>
+													<li>
+								<a href="https://scilab.developpez.com/" data-idrub="120" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Scilab
+								</a>
+							</li>
+													<li>
+								<a href="https://visualstudio.developpez.com/" data-idrub="84" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Visual Studio
+								</a>
+							</li>
+													<li>
+								<a href="https://wind.developpez.com/" data-idrub="74" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;WinDev
+								</a>
+							</li>
+													<li>
+								<a href="https://vb.developpez.com/" data-idrub="5" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Visual Basic 6
+								</a>
+							</li>
+													<li>
+								<a href="https://lazarus.developpez.com/" data-idrub="96" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Lazarus
+								</a>
+							</li>
+													<li>
+								<a href="https://qt-creator.developpez.com/" data-idrub="109" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Qt Creator
+								</a>
+							</li>
+											</ul>
+							</li>
+					<li>
+				<a href="https://programmation.developpez.com/" data-idrub="119" data-niv="1">Programmation</a>
+									<ul class="gabarit_sousmenu">
+						<li>
+							<a href="https://programmation.developpez.com/" data-idrub="119" data-niv="2">
+								<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Programmation
+							</a>
+						</li>
+													<li>
+								<a href="https://algo.developpez.com/" data-idrub="47" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Débuter - Algorithmique
+								</a>
+							</li>
+													<li>
+								<a href="https://jeux.developpez.com/" data-idrub="38" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;2D - 3D - Jeux
+								</a>
+							</li>
+													<li>
+								<a href="https://asm.developpez.com/" data-idrub="16" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Assembleur
+								</a>
+							</li>
+													<li>
+								<a href="https://c.developpez.com/" data-idrub="3" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;C
+								</a>
+							</li>
+													<li>
+								<a href="https://cpp.developpez.com/" data-idrub="59" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;C++
+								</a>
+							</li>
+													<li>
+								<a href="https://d.developpez.com/" data-idrub="123" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;D
+								</a>
+							</li>
+													<li>
+								<a href="https://go.developpez.com/" data-idrub="124" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Go
+								</a>
+							</li>
+													<li>
+								<a href="https://kotlin.developpez.com/" data-idrub="145" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Kotlin
+								</a>
+							</li>
+													<li>
+								<a href="https://objective-c.developpez.com/" data-idrub="117" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Objective C
+								</a>
+							</li>
+													<li>
+								<a href="https://pascal.developpez.com/" data-idrub="7" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Pascal
+								</a>
+							</li>
+													<li>
+								<a href="https://perl.developpez.com/" data-idrub="29" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Perl
+								</a>
+							</li>
+													<li>
+								<a href="https://python.developpez.com/" data-idrub="27" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Python
+								</a>
+							</li>
+													<li>
+								<a href="https://rust.developpez.com/" data-idrub="137" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Rust
+								</a>
+							</li>
+													<li>
+								<a href="https://swift.developpez.com/" data-idrub="128" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Swift
+								</a>
+							</li>
+													<li>
+								<a href="https://qt.developpez.com/" data-idrub="65" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Qt
+								</a>
+							</li>
+													<li>
+								<a href="https://xml.developpez.com/" data-idrub="11" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;XML
+								</a>
+							</li>
+													<li>
+								<a href="https://general.developpez.com/cours/" data-idrub="21" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Autres
+								</a>
+							</li>
+											</ul>
+							</li>
+					<li>
+				<a href="https://sgbd.developpez.com/" data-idrub="13" data-niv="1">SGBD</a>
+									<ul class="gabarit_sousmenu">
+						<li>
+							<a href="https://sgbd.developpez.com/" data-idrub="13" data-niv="2">
+								<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;SGBD &amp; SQL
+							</a>
+						</li>
+													<li>
+								<a href="https://4d.developpez.com/" data-idrub="39" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;4D
+								</a>
+							</li>
+													<li>
+								<a href="https://access.developpez.com/" data-idrub="19" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Access
+								</a>
+							</li>
+													<li>
+								<a href="https://big-data.developpez.com/" data-idrub="126" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Big Data
+								</a>
+							</li>
+													<li>
+								<a href="https://db2.developpez.com/" data-idrub="36" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;DB2
+								</a>
+							</li>
+													<li>
+								<a href="https://firebird.developpez.com/" data-idrub="73" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Firebird
+								</a>
+							</li>
+													<li>
+								<a href="https://interbase.developpez.com/" data-idrub="32" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;InterBase
+								</a>
+							</li>
+													<li>
+								<a href="https://mysql.developpez.com/" data-idrub="31" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;MySQL
+								</a>
+							</li>
+													<li>
+								<a href="https://nosql.developpez.com/" data-idrub="114" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;NoSQL
+								</a>
+							</li>
+													<li>
+								<a href="https://postgresql.developpez.com/" data-idrub="33" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;PostgreSQL
+								</a>
+							</li>
+													<li>
+								<a href="https://oracle.developpez.com/" data-idrub="25" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Oracle
+								</a>
+							</li>
+													<li>
+								<a href="https://sybase.developpez.com/" data-idrub="37" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Sybase
+								</a>
+							</li>
+													<li>
+								<a href="https://sqlserver.developpez.com/" data-idrub="34" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;SQL-Server
+								</a>
+							</li>
+											</ul>
+							</li>
+					<li>
+				<a href="https://office.developpez.com/" data-idrub="54" data-niv="1">Office</a>
+									<ul class="gabarit_sousmenu">
+						<li>
+							<a href="https://office.developpez.com/" data-idrub="54" data-niv="2">
+								<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Microsoft Office
+							</a>
+						</li>
+													<li>
+								<a href="https://access.developpez.com/" data-idrub="19" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Access
+								</a>
+							</li>
+													<li>
+								<a href="https://excel.developpez.com/" data-idrub="75" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Excel
+								</a>
+							</li>
+													<li>
+								<a href="https://word.developpez.com/" data-idrub="76" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Word
+								</a>
+							</li>
+													<li>
+								<a href="https://outlook.developpez.com/" data-idrub="77" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Outlook
+								</a>
+							</li>
+													<li>
+								<a href="https://powerpoint.developpez.com/" data-idrub="78" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;PowerPoint
+								</a>
+							</li>
+													<li>
+								<a href="https://sharepoint.developpez.com/" data-idrub="79" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;SharePoint
+								</a>
+							</li>
+													<li>
+								<a href="https://project.developpez.com/" data-idrub="99" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Microsoft Project
+								</a>
+							</li>
+													<li>
+								<a href="https://openoffice-libreoffice.developpez.com/" data-idrub="116" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;OpenOffice &amp; LibreOffice
+								</a>
+							</li>
+											</ul>
+							</li>
+					<li>
+				<a href="https://solutions-entreprise.developpez.com/" data-idrub="86" data-niv="1">Solutions d'entreprise</a>
+									<ul class="gabarit_sousmenu">
+						<li>
+							<a href="https://solutions-entreprise.developpez.com/" data-idrub="86" data-niv="2">
+								<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Solutions d'entreprise
+							</a>
+						</li>
+													<li>
+								<a href="https://big-data.developpez.com/" data-idrub="126" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Big Data
+								</a>
+							</li>
+													<li>
+								<a href="https://bpm.developpez.com/" data-idrub="134" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;BPM
+								</a>
+							</li>
+													<li>
+								<a href="https://business-intelligence.developpez.com/" data-idrub="61" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Business Intelligence
+								</a>
+							</li>
+													<li>
+								<a href="https://solutions-entreprise.developpez.com/erp-pgi/presentation-erp-pgi/" data-idrub="91" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;ERP / PGI
+								</a>
+							</li>
+													<li>
+								<a href="https://crm.developpez.com/" data-idrub="92" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;CRM
+								</a>
+							</li>
+													<li>
+								<a href="https://sas.developpez.com/" data-idrub="93" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;SAS
+								</a>
+							</li>
+													<li>
+								<a href="https://cloud-computing.developpez.com/" data-idrub="103" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Cloud Computing
+								</a>
+							</li>
+													<li>
+								<a href="https://sap.developpez.com/" data-idrub="106" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;SAP
+								</a>
+							</li>
+													<li>
+								<a href="https://www.developpez.net/forums/f1664/systemes/windows/windows-serveur/biztalk-server/" data-idrub="115" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Microsoft BizTalk Server
+								</a>
+							</li>
+													<li>
+								<a href="https://talend.developpez.com/" data-idrub="118" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Talend
+								</a>
+							</li>
+													<li>
+								<a href="https://ibmcloud.developpez.com/" data-idrub="135" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;IBM Cloud
+								</a>
+							</li>
+													<li>
+								<a href="https://intelligence-artificielle.developpez.com/" data-idrub="143" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Intelligence artificielle
+								</a>
+							</li>
+											</ul>
+							</li>
+					<li>
+				<a href="https://applications.developpez.com/" data-idrub="88" data-niv="1">Applications</a>
+									<ul class="gabarit_sousmenu">
+						<li>
+							<a href="https://applications.developpez.com/" data-idrub="88" data-niv="2">
+								<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Applications
+							</a>
+						</li>
+													<li>
+								<a href="https://open-source.developpez.com/" data-idrub="121" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Libres &amp; Open Source
+								</a>
+							</li>
+													<li>
+								<a href="https://openoffice-libreoffice.developpez.com/" data-idrub="116" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;OpenOffice &amp; LibreOffice
+								</a>
+							</li>
+													<li>
+								<a href="https://portail-projets.developpez.com/" data-idrub="98" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Projets
+								</a>
+							</li>
+											</ul>
+							</li>
+					<li>
+				<a href="https://mobiles.developpez.com/" data-idrub="94" data-niv="1">Mobiles</a>
+									<ul class="gabarit_sousmenu">
+						<li>
+							<a href="https://mobiles.developpez.com/" data-idrub="94" data-niv="2">
+								<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Mobiles
+							</a>
+						</li>
+													<li>
+								<a href="https://android.developpez.com/" data-idrub="95" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Android
+								</a>
+							</li>
+													<li>
+								<a href="https://ios.developpez.com/" data-idrub="101" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;iOS
+								</a>
+							</li>
+													<li>
+								<a href="https://windowsphone.developpez.com/" data-idrub="105" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Windows Phone
+								</a>
+							</li>
+											</ul>
+							</li>
+					<li>
+				<a href="https://systeme.developpez.com/" data-idrub="30" data-niv="1">Systèmes</a>
+									<ul class="gabarit_sousmenu">
+						<li>
+							<a href="https://systeme.developpez.com/" data-idrub="30" data-niv="2">
+								<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Systèmes
+							</a>
+						</li>
+													<li>
+								<a href="https://windows.developpez.com/" data-idrub="17" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Windows
+								</a>
+							</li>
+													<li>
+								<a href="https://linux.developpez.com/" data-idrub="18" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Linux
+								</a>
+							</li>
+													<li>
+								<a href="https://arduino.developpez.com/" data-idrub="142" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Arduino
+								</a>
+							</li>
+													<li>
+								<a href="https://securite.developpez.com/" data-idrub="40" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Sécurité
+								</a>
+							</li>
+													<li>
+								<a href="https://hardware.developpez.com/" data-idrub="64" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Hardware
+								</a>
+							</li>
+													<li>
+								<a href="https://hpc.developpez.com/" data-idrub="139" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;HPC
+								</a>
+							</li>
+													<li>
+								<a href="https://mac.developpez.com/" data-idrub="57" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Mac
+								</a>
+							</li>
+													<li>
+								<a href="https://raspberry-pi.developpez.com/" data-idrub="131" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Raspberry Pi
+								</a>
+							</li>
+													<li>
+								<a href="https://reseau.developpez.com/" data-idrub="70" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Réseau
+								</a>
+							</li>
+													<li>
+								<a href="https://green-it.developpez.com/" data-idrub="104" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Green IT
+								</a>
+							</li>
+													<li>
+								<a href="https://embarque.developpez.com/" data-idrub="110" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Systèmes embarqués
+								</a>
+							</li>
+													<li>
+								<a href="https://virtualisation.developpez.com/" data-idrub="108" data-niv="2">
+									<span aria-hidden="true" class="glyphicon glyphicon-chevron-right"></span>&nbsp;&nbsp;Virtualisation
+								</a>
+							</li>
+											</ul>
+							</li>
+			</ul>
+</div>
+
+<ul id="gabarit_menu" style="padding-left:56px;">
+	<li><a href="https://www.developpez.com/" data-idrub="1" data-niv="1" style="padding:0;"><div id="gabarit_home"></div></a>
+			</li>
+	<li><a href="https://alm.developpez.com/" data-idrub="42" data-niv="1">ALM<!--<span class="gabarit_tooltip">Cycle de vie du logiciel</span>--></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://alm.developpez.com/" data-idrub="42" data-niv="2">ALM</a></li>
+				<li><a href="https://merise.developpez.com/" data-idrub="43" data-niv="2">Merise</a></li>
+				<li><a href="https://uml.developpez.com/" data-idrub="12" data-niv="2">UML</a></li>
+			</ul></li>
+	<li><a href="https://java.developpez.com/" data-idrub="4" data-niv="1" class="gabarit_selection">Java<!--<span class="gabarit_tooltip">Plateforme et langage Java</span>--></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://java.developpez.com/" data-idrub="4" data-niv="2">Java</a></li>
+				<li><a href="https://javaweb.developpez.com/" data-idrub="97" data-niv="2">Java Web</a></li>
+				<li><a href="https://spring.developpez.com/" data-idrub="87" data-niv="2">Spring</a></li>
+				<li><a href="https://android.developpez.com/" data-idrub="95" data-niv="2">Android</a></li>
+				<li><a href="https://eclipse.developpez.com/" data-idrub="55" data-niv="2">Eclipse</a></li>
+				<li><a href="https://netbeans.developpez.com/" data-idrub="66" data-niv="2">NetBeans</a></li>
+			</ul></li>
+	<li><a href="https://dotnet.developpez.com/" data-idrub="20" data-niv="1">.NET<!--<span class="gabarit_tooltip">Microsoft Framework .NET</span>--></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://dotnet.developpez.com/" data-idrub="20" data-niv="2">Microsoft DotNET</a></li>
+				<li><a href="https://visualstudio.developpez.com/" data-idrub="84" data-niv="2">Visual Studio</a></li>
+				<li><a href="https://dotnet.developpez.com/aspnet/" data-idrub="83" data-niv="2">ASP.NET</a></li>
+				<li><a href="https://dotnet.developpez.com/csharp/" data-idrub="81" data-niv="2">C#</a></li>
+				<li><a href="https://dotnet.developpez.com/vbnet/" data-idrub="82" data-niv="2">VB.NET</a></li>
+				<li><a href="https://windowsphone.developpez.com/" data-idrub="105" data-niv="2">Windows Phone</a></li>
+				<li><a href="https://windows-azure.developpez.com/" data-idrub="107" data-niv="2">Microsoft Azure</a></li>
+			</ul></li>
+	<li><a href="https://web.developpez.com/" data-idrub="8" data-niv="1">Dév. Web<!--<span class="gabarit_tooltip">Développement Web et Webmarketing</span>--></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://web.developpez.com/" data-idrub="8" data-niv="2">Développement Web</a></li>
+				<li><a href="https://ajax.developpez.com/" data-idrub="85" data-niv="2">AJAX</a></li>
+				<li><a href="https://apache.developpez.com/" data-idrub="71" data-niv="2">Apache</a></li>
+				<li><a href="https://asp.developpez.com/" data-idrub="10" data-niv="2">ASP</a></li>
+				<li><a href="https://css.developpez.com/" data-idrub="51" data-niv="2">CSS</a></li>
+				<li><a href="https://dart.developpez.com/" data-idrub="125" data-niv="2">Dart</a></li>
+				<li><a href="https://flash.developpez.com/" data-idrub="41" data-niv="2">Flash / Flex</a></li>
+				<li><a href="https://javascript.developpez.com/" data-idrub="45" data-niv="2">JavaScript</a></li>
+				<li><a href="https://nodejs.developpez.com/" data-idrub="141" data-niv="2">NodeJS</a></li>
+				<li><a href="https://php.developpez.com/" data-idrub="9" data-niv="2">PHP</a></li>
+				<li><a href="https://ruby.developpez.com/" data-idrub="53" data-niv="2">Ruby &amp; Rails</a></li>
+				<li><a href="https://typescript.developpez.com/" data-idrub="127" data-niv="2">TypeScript</a></li>
+				<li><a href="https://web-semantique.developpez.com/" data-idrub="111" data-niv="2">Web sémantique</a></li>
+				<li><a href="https://webmarketing.developpez.com/" data-idrub="80" data-niv="2">Webmarketing</a></li>
+				<li><a href="https://xhtml.developpez.com/" data-idrub="50" data-niv="2">(X)HTML</a></li>
+			</ul></li>
+	<li><a href="https://edi.developpez.com/" data-idrub="90" data-niv="1">EDI<!--<span class="gabarit_tooltip">Environnements de Développement Intégré</span>--></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://edi.developpez.com/" data-idrub="90" data-niv="2">EDI</a></li>
+				<li><a href="https://4d.developpez.com/" data-idrub="39" data-niv="2">4D</a></li>
+				<li><a href="https://delphi.developpez.com/" data-idrub="2" data-niv="2">Delphi</a></li>
+				<li><a href="https://eclipse.developpez.com/" data-idrub="55" data-niv="2">Eclipse</a></li>
+				<li><a href="https://jetbrains.developpez.com/" data-idrub="144" data-niv="2">JetBrains</a></li>
+				<li><a href="https://labview.developpez.com/" data-idrub="72" data-niv="2">LabVIEW</a></li>
+				<li><a href="https://netbeans.developpez.com/" data-idrub="66" data-niv="2">NetBeans</a></li>
+				<li><a href="https://matlab.developpez.com/" data-idrub="58" data-niv="2">MATLAB</a></li>
+				<li><a href="https://scilab.developpez.com/" data-idrub="120" data-niv="2">Scilab</a></li>
+				<li><a href="https://visualstudio.developpez.com/" data-idrub="84" data-niv="2">Visual Studio</a></li>
+				<li><a href="https://wind.developpez.com/" data-idrub="74" data-niv="2">WinDev</a></li>
+				<li><a href="https://vb.developpez.com/" data-idrub="5" data-niv="2">Visual Basic 6</a></li>
+				<li><a href="https://lazarus.developpez.com/" data-idrub="96" data-niv="2">Lazarus</a></li>
+				<li><a href="https://qt-creator.developpez.com/" data-idrub="109" data-niv="2">Qt Creator</a></li>
+			</ul></li>
+	<li><a href="https://programmation.developpez.com/" data-idrub="119" data-niv="1">Programmation<!--<span class="gabarit_tooltip">Programmation et langages de programmation applicatifs</span>--></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://programmation.developpez.com/" data-idrub="119" data-niv="2">Programmation</a></li>
+				<li><a href="https://algo.developpez.com/" data-idrub="47" data-niv="2">Débuter - Algorithmique</a></li>
+				<li><a href="https://jeux.developpez.com/" data-idrub="38" data-niv="2">2D - 3D - Jeux</a></li>
+				<li><a href="https://asm.developpez.com/" data-idrub="16" data-niv="2">Assembleur</a></li>
+				<li><a href="https://c.developpez.com/" data-idrub="3" data-niv="2">C</a></li>
+				<li><a href="https://cpp.developpez.com/" data-idrub="59" data-niv="2">C++</a></li>
+				<li><a href="https://d.developpez.com/" data-idrub="123" data-niv="2">D</a></li>
+				<li><a href="https://go.developpez.com/" data-idrub="124" data-niv="2">Go</a></li>
+				<li><a href="https://kotlin.developpez.com/" data-idrub="145" data-niv="2">Kotlin</a></li>
+				<li><a href="https://objective-c.developpez.com/" data-idrub="117" data-niv="2">Objective C</a></li>
+				<li><a href="https://pascal.developpez.com/" data-idrub="7" data-niv="2">Pascal</a></li>
+				<li><a href="https://perl.developpez.com/" data-idrub="29" data-niv="2">Perl</a></li>
+				<li><a href="https://python.developpez.com/" data-idrub="27" data-niv="2">Python</a></li>
+				<li><a href="https://rust.developpez.com/" data-idrub="137" data-niv="2">Rust</a></li>
+				<li><a href="https://swift.developpez.com/" data-idrub="128" data-niv="2">Swift</a></li>
+				<li><a href="https://qt.developpez.com/" data-idrub="65" data-niv="2">Qt</a></li>
+				<li><a href="https://xml.developpez.com/" data-idrub="11" data-niv="2">XML</a></li>
+				<li><a href="https://general.developpez.com/cours/" data-idrub="21" data-niv="2">Autres</a></li>
+			</ul></li>
+	<li><a href="https://sgbd.developpez.com/" data-idrub="13" data-niv="1">SGBD<!--<span class="gabarit_tooltip">Systèmes de Gestion de Bases de Données</span>--></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://sgbd.developpez.com/" data-idrub="13" data-niv="2">SGBD &amp; SQL</a></li>
+				<li><a href="https://4d.developpez.com/" data-idrub="39" data-niv="2">4D</a></li>
+				<li><a href="https://access.developpez.com/" data-idrub="19" data-niv="2">Access</a></li>
+				<li><a href="https://big-data.developpez.com/" data-idrub="126" data-niv="2">Big Data</a></li>
+				<li><a href="https://db2.developpez.com/" data-idrub="36" data-niv="2">DB2</a></li>
+				<li><a href="https://firebird.developpez.com/" data-idrub="73" data-niv="2">Firebird</a></li>
+				<li><a href="https://interbase.developpez.com/" data-idrub="32" data-niv="2">InterBase</a></li>
+				<li><a href="https://mysql.developpez.com/" data-idrub="31" data-niv="2">MySQL</a></li>
+				<li><a href="https://nosql.developpez.com/" data-idrub="114" data-niv="2">NoSQL</a></li>
+				<li><a href="https://postgresql.developpez.com/" data-idrub="33" data-niv="2">PostgreSQL</a></li>
+				<li><a href="https://oracle.developpez.com/" data-idrub="25" data-niv="2">Oracle</a></li>
+				<li><a href="https://sybase.developpez.com/" data-idrub="37" data-niv="2">Sybase</a></li>
+				<li><a href="https://sqlserver.developpez.com/" data-idrub="34" data-niv="2">SQL-Server</a></li>
+			</ul></li>
+	<li><a href="https://office.developpez.com/" data-idrub="54" data-niv="1">Office<!--<span class="gabarit_tooltip">Bureautique pour l'entreprise</span>--></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://office.developpez.com/" data-idrub="54" data-niv="2">Microsoft Office</a></li>
+				<li><a href="https://access.developpez.com/" data-idrub="19" data-niv="2">Access</a></li>
+				<li><a href="https://excel.developpez.com/" data-idrub="75" data-niv="2">Excel</a></li>
+				<li><a href="https://word.developpez.com/" data-idrub="76" data-niv="2">Word</a></li>
+				<li><a href="https://outlook.developpez.com/" data-idrub="77" data-niv="2">Outlook</a></li>
+				<li><a href="https://powerpoint.developpez.com/" data-idrub="78" data-niv="2">PowerPoint</a></li>
+				<li><a href="https://sharepoint.developpez.com/" data-idrub="79" data-niv="2">SharePoint</a></li>
+				<li><a href="https://project.developpez.com/" data-idrub="99" data-niv="2">Microsoft Project</a></li>
+				<li><a href="https://openoffice-libreoffice.developpez.com/" data-idrub="116" data-niv="2">OpenOffice &amp; LibreOffice</a></li>
+			</ul></li>
+	<li><a href="https://solutions-entreprise.developpez.com/" data-idrub="86" data-niv="1">Solutions d'entreprise<!--<span class="gabarit_tooltip">Autres logiciels pour l'entreprise</span>--></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://solutions-entreprise.developpez.com/" data-idrub="86" data-niv="2">Solutions d'entreprise</a></li>
+				<li><a href="https://big-data.developpez.com/" data-idrub="126" data-niv="2">Big Data</a></li>
+				<li><a href="https://bpm.developpez.com/" data-idrub="134" data-niv="2">BPM</a></li>
+				<li><a href="https://business-intelligence.developpez.com/" data-idrub="61" data-niv="2">Business Intelligence</a></li>
+				<li><a href="https://solutions-entreprise.developpez.com/erp-pgi/presentation-erp-pgi/" data-idrub="91" data-niv="2">ERP / PGI</a></li>
+				<li><a href="https://crm.developpez.com/" data-idrub="92" data-niv="2">CRM</a></li>
+				<li><a href="https://sas.developpez.com/" data-idrub="93" data-niv="2">SAS</a></li>
+				<li><a href="https://cloud-computing.developpez.com/" data-idrub="103" data-niv="2">Cloud Computing</a></li>
+				<li><a href="https://sap.developpez.com/" data-idrub="106" data-niv="2">SAP</a></li>
+				<li><a href="https://www.developpez.net/forums/f1664/systemes/windows/windows-serveur/biztalk-server/" data-idrub="115" data-niv="2">Microsoft BizTalk Server</a></li>
+				<li><a href="https://talend.developpez.com/" data-idrub="118" data-niv="2">Talend</a></li>
+				<li><a href="https://ibmcloud.developpez.com/" data-idrub="135" data-niv="2">IBM Cloud</a></li>
+				<li><a href="https://intelligence-artificielle.developpez.com/" data-idrub="143" data-niv="2">Intelligence artificielle</a></li>
+			</ul></li>
+	<li><a href="https://applications.developpez.com/" data-idrub="88" data-niv="1">Applications<!--<span class="gabarit_tooltip">Applications logicielles</span>--></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://applications.developpez.com/" data-idrub="88" data-niv="2">Applications</a></li>
+				<li><a href="https://open-source.developpez.com/" data-idrub="121" data-niv="2">Libres &amp; Open Source</a></li>
+				<li><a href="https://openoffice-libreoffice.developpez.com/" data-idrub="116" data-niv="2">OpenOffice &amp; LibreOffice</a></li>
+				<li><a href="https://portail-projets.developpez.com/" data-idrub="98" data-niv="2">Projets</a></li>
+			</ul></li>
+	<li><a href="https://mobiles.developpez.com/" data-idrub="94" data-niv="1">Mobiles<!--<span class="gabarit_tooltip">Logiciels et matériels mobiles</span>--></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://mobiles.developpez.com/" data-idrub="94" data-niv="2">Mobiles</a></li>
+				<li><a href="https://android.developpez.com/" data-idrub="95" data-niv="2">Android</a></li>
+				<li><a href="https://ios.developpez.com/" data-idrub="101" data-niv="2">iOS</a></li>
+				<li><a href="https://windowsphone.developpez.com/" data-idrub="105" data-niv="2">Windows Phone</a></li>
+			</ul></li>
+	<li><a href="https://systeme.developpez.com/" data-idrub="30" data-niv="1">Systèmes<!--<span class="gabarit_tooltip">Logiciels et matériels systèmes</span>--></a>
+			<ul class="gabarit_sousmenu">
+				<li><a href="https://systeme.developpez.com/" data-idrub="30" data-niv="2">Systèmes</a></li>
+				<li><a href="https://windows.developpez.com/" data-idrub="17" data-niv="2">Windows</a></li>
+				<li><a href="https://linux.developpez.com/" data-idrub="18" data-niv="2">Linux</a></li>
+				<li><a href="https://arduino.developpez.com/" data-idrub="142" data-niv="2">Arduino</a></li>
+				<li><a href="https://securite.developpez.com/" data-idrub="40" data-niv="2">Sécurité</a></li>
+				<li><a href="https://hardware.developpez.com/" data-idrub="64" data-niv="2">Hardware</a></li>
+				<li><a href="https://hpc.developpez.com/" data-idrub="139" data-niv="2">HPC</a></li>
+				<li><a href="https://mac.developpez.com/" data-idrub="57" data-niv="2">Mac</a></li>
+				<li><a href="https://raspberry-pi.developpez.com/" data-idrub="131" data-niv="2">Raspberry Pi</a></li>
+				<li><a href="https://reseau.developpez.com/" data-idrub="70" data-niv="2">Réseau</a></li>
+				<li><a href="https://green-it.developpez.com/" data-idrub="104" data-niv="2">Green IT</a></li>
+				<li><a href="https://embarque.developpez.com/" data-idrub="110" data-niv="2">Systèmes embarqués</a></li>
+				<li><a href="https://virtualisation.developpez.com/" data-idrub="108" data-niv="2">Virtualisation</a></li>
+			</ul></li>
+</ul>
+
+<ul id="gabarit_barre1"><li class="gabarit_selection"><a href="https://java.developpez.com/">Java</a></li><li><a href="https://javaweb.developpez.com/">Java Web</a></li><li><a href="https://spring.developpez.com/">Spring</a></li><li><a href="https://android.developpez.com/">Android</a></li><li><a href="https://eclipse.developpez.com/">Eclipse</a></li><li><a href="https://netbeans.developpez.com/">NetBeans</a></li></ul>
+
+<div id="gabarit_barre2">
+	<a class="gabarit_social gabarit_facebook" href="http://www.facebook.com/pages/Java/368176262168" target="_blank" title="Retrouver Developpez sur Facebook"></a>
+	<a class="gabarit_social gabarit_twitter" href="http://twitter.com/javaDeveloppez" target="_blank" title="Retrouver Developpez sur Twitter"></a>
+	<a class="gabarit_social gabarit_rss" href="http://java.developpez.com/index/rss" target="_blank" title="Flux RSS"></a>
+	<ul>
+<li><a href="https://www.developpez.net/forums/f6/java/">Forums Java</a></li><li><a href="https://java.developpez.com/faq/">FAQ Java</a></li><li><a href="https://java.developpez.com/cours/">Tutoriels Java</a></li><li><a href="https://java.developpez.com/livres/">Livres Java</a></li><li><a href="https://java.developpez.com/videos/">Vidéos Java</a></li><li><a href="https://java.developpez.com/telecharger/index/categorie/43/Sources-Java">Sources Java</a></li><li><a href="https://java.developpez.com/outils/">Outils, EDI &amp; API Java</a></li><li><a href="http://javasearch.developpez.com/">JavaSearch</a></li>	</ul>
+</div>
+
+</nav>
+</header>
+<section>
+
+<div id="gabarit_pubBB">
+<div id="gabarit_pub0"></div><div id="ul4ia0c" class="dvpb0" style="display: inline-block; width: 728px; height: 90px"><style type="text/css">html, body { margin: 0; padding: 0; }</style><iframe src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/show_i.html" marginwidth="0" marginheight="0" hspace="0" vspace="0" scrolling="no" width="728" height="90" frameborder="0"></iframe><style type="text/css"> #gabarit_pub0 { display: inline-block; }</style></div>
+</div>
+
+<div class="contenuPage">		<article class="ArticleComplet" itemscope="" itemtype="http://schema.org/Article" style="margin: 0px 20px;">
+<meta itemprop="genre" content="informatique">
+<meta itemprop="inLanguage" content="fr-FR">
+		
+<header class="EnteteTitres">
+<h1 class="titre-article" itemprop="name">Créer un DSL facilement avec Xtext</h1>
+<h2 class="soustitre-article">
+    <b>Exemple d'un langage de description de sites web</b>
+  </h2>
+</header><nav class="nav-sommaire fixed2" role="navigation" style="width: 325px;">
+<header><h1 class="TitreHeader StopArrondi ToggleGecko">Table des matières<img class="ToggleImgPlier" title="Plier" alt="Plier" src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/fleche-haut-bleue.png"><img class="ToggleImgDeplier" title="Déplier" alt="Déplier" src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/fleche-bas-bleue.png" style="display:none;"></h1></header>
+<ul id="nav_sommaire_ul_principal" class="nav-sommaire-ul" style="overflow-y: auto;">
+    <li><a class="summaryIndent0" href="#LI">I. Introduction</a></li>
+    <li><a class="summaryIndent0" href="#LII">II. WDL&nbsp;: <span class="italique"><b>Website Description Language</b></span></a></li>
+    <li><a class="summaryIndent0" href="#LIII">III. Une histoire de syntaxe…</a><ul class="nav-sommaire-ul IndentationIII">
+      
+      
+      <li><a class="summaryIndent1" href="#LIII-A">III-A. Syntaxe abstraite avec Ecore</a><ul class="nav-sommaire-ul IndentationIII-A">
+        
+        
+        <li><a class="summaryIndent2" href="#LIII-A-1">III-A-1. Création d'un fichier Ecore</a></li>
+        <li><a class="summaryIndent2" href="#LIII-A-2">III-A-2. Métamodélisation via l'éditeur graphique</a></li>
+        <li><a class="summaryIndent2" href="#LIII-A-3">III-A-3. Métamodélisation via l'éditeur textuel</a></li>
+        <li><a class="summaryIndent2" href="#LIII-A-4">III-A-4. Génération des classes d'implémentation</a></li>
+      </ul></li>
+      <li><a class="summaryIndent1" href="#LIII-B">III-B. Syntaxe concrète avec Xtext</a><ul class="nav-sommaire-ul IndentationIII-B">
+        
+        
+        <li><a class="summaryIndent2" href="#LIII-B-1">III-B-1. Création d'un fichier Xtext</a></li>
+        <li><a class="summaryIndent2" href="#LIII-B-2">III-B-2. Définition de la grammaire</a></li>
+        <li><a class="summaryIndent2" href="#LIII-B-3">III-B-3. Génération du plugin</a></li>
+      </ul></li>
+    </ul></li>
+    <li><a class="summaryIndent0" href="#LIV">IV. Aller plus loin : portée et validation</a><ul class="nav-sommaire-ul IndentationIV">
+      
+      
+      <li><a class="summaryIndent1" href="#LIV-A">IV-A. Mécanisme de portée</a></li>
+      <li><a class="summaryIndent1" href="#LIV-B">IV-B. Mécanisme de validation</a></li>
+    </ul></li>
+    <li><a class="summaryIndent0" href="#LV">V. Projection vers les langages du web</a><ul class="nav-sommaire-ul IndentationV">
+      
+      
+      
+      <li><a class="summaryIndent1" href="#LV-A">V-A. Transformation</a></li>
+      <li><a class="summaryIndent1" href="#LV-B">V-B. Code de transformation</a></li>
+    </ul></li>
+    <li><a class="summaryIndent0" href="#LVI">VI. Remerciements</a></li>
+  </ul></nav>
+
+
+<div class="fixeMarge"><section itemprop="about" class="SectionSynopsis">
+    <p>Après avoir rappelé brièvement ce que sont les DSL et leur 
+intérêt pour le développement logiciel, ce tutoriel illustre la création
+ d'un langage minimaliste de description de site web, baptisé 
+«&nbsp;WDL&nbsp;». L'environnement utilisé est Eclipse Modeling 
+Framework (EMF), qui est devenu le standard <span class="italique">de-facto</span> pour l'ingénierie dirigée par les modèles. Les tenants et les aboutissants ce tutoriel se trouvent dans <a class="lienArticle simple" href="http://www.slideshare.net/OlivierLeGoar/syntaxe-des-dsl-en-idm-avec-xtext">mon cours</a>.</p>
+  <p class="TextNbrVues">Article lu <span id="NbrVues">-1</span> fois.</p></section></div><div class="InfoAuthArtBook" style="height: 192px;">
+	<section class="SectionAuteurs">
+	<header><h1 class="TitreHeader">L'auteur</h1></header>
+<p class="auteur" itemprop="name" itemscope="" itemtype="http://schema.org/Person"><a itemprop="url" class="auteur" href="http://www.developpez.net/forums/u51184/hephaistos007/"><span itemprop="author">Olivier Le Goaer</span></a><a class="homepage" href="http://olegoaer.developpez.com/"><img src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/kitbm-site-personnel.png" title="Cours d'Olivier Le Goaer - Android, jQuery Mobile, Java, PHP, UML, EMF" alt="Site personnel" style="vertical-align:middle;"></a></p>
+</section>
+<section class="SectionInformationArticle">
+<header><h1 class="TitreHeader">L'article</h1></header>
+
+<p class="InfoArticle">Publié&nbsp;le&nbsp;<span itemprop="datePublished">5&nbsp;octobre&nbsp;2012&nbsp;</span>- Mis&nbsp;à&nbsp;jour&nbsp;le&nbsp;<span itemprop="dateModified">4&nbsp;octobre&nbsp;2016&nbsp;</span></p>
+    
+    
+<p class="InfoArticle"><img alt="Public visé : confirmé" src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/public-vise-3.png"></p>
+    
+<p class="InfoArticle">Durée : 4 heures</p>
+  <p>
+<span class="lientelechargementpdf"><a class="lientelechargement" href="http://olegoaer.developpez.com/tutos/model/xtext/wdl/WDL.pdf" title="Télécharger la version PDF de cet article.">Version PDF</a></span>
+<span class="lientelechargementzip"><a class="lientelechargement" href="http://olegoaer.developpez.com/tutos/model/xtext/wdl/WDL.zip" title="Télécharger la version HTML de cet article.">Version hors-ligne</a></span></p>
+<p><span class="lientelechargementebook"><a class="lientelechargement" href="http://olegoaer.developpez.com/tutos/model/xtext/wdl/WDL.epub" title="Télécharger la version ePub de l'article compatible avec la plupart des liseuses non Kindle (Amazon).">ePub</a></span>, <span class="lientelechargementebook"><a class="lientelechargement" href="http://olegoaer.developpez.com/tutos/model/xtext/wdl/WDL.azw" title="Télécharger la version Azw spécifique aux liseuses Kindle (Amazon).">Azw</a></span> et <span class="lientelechargementebook"><a class="lientelechargement" href="http://olegoaer.developpez.com/tutos/model/xtext/wdl/WDL.mobi" title="Télécharger la version Mobi de l'article compatible avec les liseuses Amazon.">Mobi</a></span></p>
+</section>
+<section class="SectionBookmarks">
+<header><h1 class="TitreHeader">Liens&nbsp;sociaux</h1></header>
+<div class="InfoBookmarks"><a title="Viadeo" href="http://www.viadeo.com/shareit/share/?url=http%3A%2F%2Folegoaer.developpez.com%2Ftutos%2Fmodel%2Fxtext%2Fwdl%2F&amp;Title=Cr%C3%A9er+un+DSL+facilement+avec+Xtext" rel="nofollow"><img alt="Viadeo" src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/kitbm-viadeo.png"></a>&nbsp;<a title="Twitter" href="http://twitter.com/timeline/home?status=http%3A%2F%2Folegoaer.developpez.com%2Ftutos%2Fmodel%2Fxtext%2Fwdl%2F" rel="nofollow"><img alt="Twitter" src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/kitbm-twitter.png"></a>&nbsp;<a title="Facebook" href="http://www.facebook.com/sharer.php?u=http%3A%2F%2Folegoaer.developpez.com%2Ftutos%2Fmodel%2Fxtext%2Fwdl%2F" rel="nofollow"><img alt="Facebook" src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/kitbm-facebook.png"></a>&nbsp;<a title="Google +" href="https://plus.google.com/share?url=http%3A%2F%2Folegoaer.developpez.com%2Ftutos%2Fmodel%2Fxtext%2Fwdl%2F" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><img src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/gplus-16.png" alt="Share on Google+"></a>&nbsp;<script src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/in.js" type="text/javascript"> lang: fr_FR</script>
+			<span class="IN-widget" style="display: inline-block; line-height: 1; vertical-align: bottom; padding: 0px; margin: 0px; text-indent: 0px; text-align: center;" data-lnkd-debug="&lt;script type=&quot;IN/Share+init&quot; data-url=&quot;$url&quot;&gt;&lt;/script&gt;"><span style="padding: 0px !important; margin: 0px !important; text-indent: 0px !important; display: inline-block !important; vertical-align: bottom !important; font-size: 1px !important;"><button class="IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu"><xdoor-icon aria-hidden="true"><svg viewBox="0 0 24 24" width="24px" height="24px" x="0" y="0" preserveAspectRatio="xMinYMin meet">
+      <g style="fill: currentColor">
+        <rect x="-0.003" style="fill:none;" width="24" height="24"></rect>
+        <path style="" d="M20,2h-16c-1.1,0-2,0.9-2,2v16c0,1.1,0.9,2,2,2h16c1.1,0,2-0.9,2-2V4C22,2.9,21.1,2,20,2zM8,19h-3v-9h3V19zM6.5,8.8C5.5,8.8,4.7,8,4.7,7s0.8-1.8,1.8-1.8S8.3,6,8.3,7S7.5,8.8,6.5,8.8zM19,19h-3v-4c0-1.4-0.6-2-1.5-2c-1.1,0-1.5,0.8-1.5,2.2V19h-3v-9h2.9v1.1c0.5-0.7,1.4-1.3,2.6-1.3c2.3,0,3.5,1.1,3.5,3.7V19z"></path>
+      </g>
+    </svg></xdoor-icon>Partager</button></span></span>&nbsp;</div>
+</section></div><section itemprop="articleBody" class="articleBody" style="margin-left: 350px; margin-top: 20px; clear: none;">
+    
+		<h1 class="TitreSection0" id="LI">I. Introduction<a class="HautPage" href="#" title="Haut de page">&#9650;</a></h1><div class="BlocSection0">
+      
+      <p>On appelle <abbr class="tooltip blue-tooltip dash">DSL<span>Domain Specific Language</span></abbr> la famille de langages dédiés à un domaine particulier, par opposition aux <abbr class="tooltip blue-tooltip dash">GPL<span>General Purpose Langage</span></abbr>
+ qui peuvent potentiellement traiter tous les domaines. Par nature, les 
+GPL sont des langages assez stables et éprouvés, comme c'est le cas en 
+programmation avec Java et C, ou en modélisation avec UML. À l'inverse, 
+on peut s'attendre à une prolifération de langages dédiés, pour des 
+usages ponctuels et bien ciblés, et bénéficiant naturellement d'un 
+processus de validation moins rigide.</p>
+      <p>L'<abbr class="tooltip blue-tooltip dash">IDM<span>Ingénierie Dirigée par les Modèles</span></abbr>
+ promeut cette philosophie selon laquelle chacun est libre de créer un 
+langage pour un besoin précis. Là où le bât blesse, c'est qu'il faut 
+être capable d'outiller correctement ce tout nouveau langage, avec 
+notamment&nbsp;:</p>
+      <ol type="1">
+        <li>le compilateur/interpréteur associé&nbsp;;</li>
+        <li>un environnement adapté (éditeur de code avec coloration syntaxique, autocomplétion, etc).</li>
+      </ol>
+      <p>Fort heureusement, il existe des solutions moins chronophages 
+que de tout redévelopper. Le point (1) se contourne en projetant le code
+ vers un langage cible qui, lui, dispose d'un compilateur/interpréteur 
+bien établi. Pour le point (2), des technologies comme Xtext nous aident
+ à produire des éditeurs de code sur-mesure, pour l'IDE Eclipse.</p>
+    </div>
+    
+		<h1 class="TitreSection0" id="LII">II. WDL&nbsp;: <span class="italique"><b>Website Description Language</b></span><a class="HautPage" href="#" title="Haut de page">&#9650;</a></h1><div class="BlocSection0">
+      
+      <p>L'idée du langage WDL serait de décrire les différentes pages 
+qui composent un site web, mobile ou non, en renseignant quelques 
+caractéristiques de base, et notamment les menus de navigation entre 
+celles-ci. Les commentaires (monolignes et multilignes) seraient 
+également supportés.</p>
+      <p>Comme souvent pour la création d'un DSL, le plus simple est 
+d'imaginer à quoi ressemblera notre futur langage, sobrement baptisé WDL
+ (<span class="italique">Website Description Language</span>). Nous 
+optons pour une syntaxe textuelle exploitant des mots-clés anglais, 
+moins verbeux que le français. Au passage, l'extension de nos futurs 
+fichiers textuels est toute trouvée&nbsp;: .wdl</p>
+      <div class="code_et_titre"><div class="titre_des_codes" id="IdTitreCode-d0e173">Exemple de fichier .wdl<div class="selectionner_code"><span class="selectionner_code LienSelectionne" id="code-d0e173" onclick="selectionCode('contenuCoded0e173');">Sélectionnez</span></div></div><pre class="code_uniquement" style="overflow:auto;"><code id="contenuCoded0e173" class="contenuCode">mobile website <code class="javascript_operator">{</code>
+   
+   copyright&nbsp;<code class="javascript_operator">:</code> <code class="javascript_literal1">"</code><code class="javascript_literal1">Le</code><code class="javascript_literal1"> </code><code class="javascript_literal1">Goaer</code><code class="javascript_literal1"> </code><code class="javascript_literal1">Corporation</code><code class="javascript_literal1">"</code>
+   
+   page <code class="javascript_keyword4">home</code> <code class="javascript_operator">{</code>
+      title&nbsp;<code class="javascript_operator">:</code> <code class="javascript_literal1">"</code><code class="javascript_literal1">Bienvenue</code><code class="javascript_literal1">"</code>
+      menu&nbsp;<code class="javascript_operator">:</code> about<code class="javascript_operator">,</code> findUs
+   <code class="javascript_operator">}</code>
+
+   page about <code class="javascript_operator">{</code>
+      title&nbsp;<code class="javascript_operator">:</code> <code class="javascript_literal1">"</code><code class="javascript_literal1">A</code><code class="javascript_literal1"> </code><code class="javascript_literal1">propos...</code><code class="javascript_literal1">"</code>
+   <code class="javascript_operator">}</code>
+
+   <code class="javascript_comment2">//</code><code class="javascript_comment2">Page</code><code class="javascript_comment2"> </code><code class="javascript_comment2">qui</code><code class="javascript_comment2"> </code><code class="javascript_comment2">contiendra</code><code class="javascript_comment2"> </code><code class="javascript_comment2">une</code><code class="javascript_comment2"> </code><code class="javascript_comment2">map</code><code class="javascript_comment2"> </code><code class="javascript_comment2">google</code>
+   page findUs <code class="javascript_operator">{</code>
+      title&nbsp;<code class="javascript_operator">:</code> <code class="javascript_literal1">"</code><code class="javascript_literal1">Où</code><code class="javascript_literal1"> </code><code class="javascript_literal1">nous</code><code class="javascript_literal1"> </code><code class="javascript_literal1">trouver&nbsp;?</code><code class="javascript_literal1">"</code>
+      menu&nbsp;<code class="javascript_operator">:</code> <code class="javascript_keyword4">home</code>
+   <code class="javascript_operator">}</code>
+<code class="javascript_operator">}</code></code></pre></div>
+      <p>Le vocabulaire utilisé par WDL (les mots-clés en quelque sorte)
+ relève bien du domaine des sites web, et est donc parfaitement 
+accessible à un non-informaticien. Dès lors, on peut imaginer un 
+webmaster/webdesigner ou même un client final exprimer ses besoins dans 
+le langage WDL, sans connaissances particulières des technologies du 
+web.</p>
+    </div>
+    
+		<h1 class="TitreSection0" id="LIII">III. Une histoire de syntaxe…<a class="HautPage" href="#" title="Haut de page">&#9650;</a></h1><div class="BlocSection0">
+      
+      <p>L'approche préconisée dans ce tutoriel est de commencer par 
+définir la syntaxe abstraite de notre langage WDL à travers la 
+définition d'un métamodèle, en introduisant des concepts (i.e. le 
+vocabulaire du domaine des sites web) et les relations entre ces 
+concepts. Pour autant, notre langage ne disposera pas encore de syntaxe 
+concrète (aussi appelée syntaxe de surface), qui est pourtant 
+l'incarnation la plus naturelle d'une langue, quelle qu'elle soit. Cette
+ tâche se fait dans un second temps par la mise en correspondance du 
+métamodèle et d'une grammaire, dans le cas d'une syntaxe textuelle comme
+ c'est le cas ici. Voyons comment réaliser ces 2 grandes étapes sous 
+EMF.</p>
+      
+		<h2 class="TitreSection1" id="LIII-A">III-A. Syntaxe abstraite avec Ecore<a class="HautPage" href="#" title="Haut de page">&#9650;</a></h2><div class="BlocSection1">
+        
+        <p>Dans l'univers EMF, les métamodèles sont eux-mêmes décrits 
+dans un langage spécialisé&nbsp;: le langage ECORE. Ce langage de 
+métamodélisation repose sur des notions issues de l'orienté-objet et ne 
+devrait donc pas dérouter les ingénieurs habitués à la programmation par
+ objet et à UML. Pour en savoir plus, consultez le <a class="lienArticle simple" href="http://mbaron.developpez.com/eclipse/introemf">tutoriel sur la métamodélisation en Ecore</a> par Mickael Baron.</p>
+        
+		<h3 class="TitreSection2" id="LIII-A-1">III-A-1. Création d'un fichier Ecore<a class="HautPage" href="#" title="Haut de page">&#9650;</a></h3><div class="BlocSection2">
+          
+          <p>Commencez par créer un nouveau projet EMF vide 
+(File&gt;New&gt;Other&gt;EMF&gt;Empty EMF Project) puis dotez-le d'une 
+nature Xtext (Clic droit sur le projet &gt; Configure &gt; Add Xtext 
+Nature/Convert to Xtext Project). Dans le dossier model, créez un 
+fichier Ecore (New&gt;Other&gt;EMF&gt;Ecore model), nommé Wdl.ecore. 
+N'oubliez surtout pas de renseigner les propriétés de votre langage, du 
+genre name:website, nsPrefix:website et nsUri:http://WDL/1.0. Désormais,
+ cet URI servira d'identifiant unique à chaque version de votre langage à
+ travers la plateforme EMF.</p>
+          <p>A partir de là, vous avez le choix entre une édition 
+graphique de votre fichier Ecore, ou bien une édition textuelle. Chacun 
+possède ses avantages et inconvénients. Personnellement, je prend le 
+meilleur des deux mondes&nbsp;: je dégrossis le travail avec l'éditeur 
+graphique puis j'attaque les finitions avec l'éditeur textuel. Veillez 
+juste à ne pas être contradictoire entre ces deux points de vues sur le 
+même fichier Ecore.</p>
+        </div>
+        
+		<h3 class="TitreSection2" id="LIII-A-2">III-A-2. Métamodélisation via l'éditeur graphique<a class="HautPage" href="#" title="Haut de page">&#9650;</a></h3><div class="BlocSection2">
+          
+          <p>Lancez l'éditeur graphique de diagramme Ecore (clic droit 
+sur le fichier &gt; Initialize Ecore Diagram). En fin de processus, vous
+ obtenez un fichier Wdl.aird. Double cliquez dessus et vous verrez 
+apparaître une palette d'outils «&nbsp;à la UML&nbsp;». La 
+métamodélisation graphique du domaine des sites web est alors 
+triviale&nbsp;:</p>
+          <div class="div-figure"><figure class="figure-center"><img class="figure-img-caption" src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/Wdl.png" alt="Image non disponible" width="214" height="312"><figcaption class="figure-img-caption TextAlign-center">Wdl.ecore (vue graphique)</figcaption></figure></div>
+          <p>Un Website est l'élément racine. Il est décrit par deux 
+attributs (copyright et isMobileFriendly) et par une composition d'une 
+ou plusieurs pages. Une page est décrite par deux attributs (son nom et 
+son titre), ainsi que par des références à d'autres pages.</p>
+        </div>
+        
+		<h3 class="TitreSection2" id="LIII-A-3">III-A-3. Métamodélisation via l'éditeur textuel<a class="HautPage" href="#" title="Haut de page">&#9650;</a></h3><div class="BlocSection2">
+          
+          <p>L'éditeur textuel nécessite l'installation au préalable 
+d'un composant supplémentaire&nbsp;: OCL Tools (Help &gt; Install 
+Modeling Components). Une fois installé, lancez l'éditeur (clic droit 
+sur le fichier &gt; Open with &gt; OCLinEcore Editor) et complétez le 
+code comme suit&nbsp;:</p>
+          <div class="code_et_titre"><div class="titre_des_codes" id="IdTitreCode-d0e356">Wdl.ecore (vue textuelle)<div class="selectionner_code"><span class="selectionner_code LienSelectionne" id="code-d0e356" onclick="selectionCode('contenuCoded0e356');">Sélectionnez</span></div></div><pre class="code_uniquement" style="overflow:auto;"><code id="contenuCoded0e356" class="contenuCode">package website : website <code class="python_operator">=</code> <code class="python_literal1">'</code><code class="python_literal1">http</code><code class="python_literal1">:</code><code class="python_literal1">/</code><code class="python_literal1">/</code><code class="python_literal1">WDL</code><code class="python_literal1">/</code><code class="python_literal1">1</code><code class="python_literal1">.</code><code class="python_literal1">0</code><code class="python_literal1">'</code>
+{
+    <code class="python_keyword1">class</code> Website
+    {
+        attribute copyright : String[?];
+        attribute isMobileFriendly : Boolean[<code class="python_digit">1</code>];
+        <a class="python_keyword2 lien_documentation_code" target="_blank" href="http://docs.python.org/library/functions.html?highlight=property#property"><span>property</span></a> pages : Page[<code class="python_operator">+</code>] { ordered composes };
+        invariant SingletonPage: self.pages<code class="python_operator">-</code><code class="python_operator">&gt;</code><code class="python_function">forAll</code><code class="python_operator">(</code>p1, p2 <code class="python_operator">|</code> p1 <code class="python_operator">&lt;</code><code class="python_operator">&gt;</code> p2 implies p1.name<code class="python_operator">&lt;</code><code class="python_operator">&gt;</code>p2.name);
+    }
+    <code class="python_keyword1">class</code> Page
+    {
+        attribute name : String[<code class="python_digit">1</code>];
+        attribute title : String[<code class="python_digit">1</code>];
+        <a class="python_keyword2 lien_documentation_code" target="_blank" href="http://docs.python.org/library/functions.html?highlight=property#property"><span>property</span></a> targets : Page[<code class="python_operator">*</code>] { ordered <code class="python_operator">!</code>unique };
+        invariant AvoidSelfReference: <code class="python_keyword1">not</code> self.targets<code class="python_operator">-</code><code class="python_operator">&gt;</code><code class="python_function">includes</code><code class="python_operator">(</code>self);
+        invariant AvoidDuplicates: self.targets<code class="python_operator">-</code><code class="python_operator">&gt;</code>forAll <code class="python_operator">(</code> t1 <code class="python_operator">|</code> self.targets <code class="python_operator">-</code><code class="python_operator">&gt;</code> one <code class="python_operator">(</code> t2 <code class="python_operator">|</code> t2 <code class="python_operator">=</code> t1));
+    }
+}</code></pre></div>
+          <p>Le gros avantage de cette vue textuelle est de pouvoir exprimer des contraintes <abbr class="tooltip blue-tooltip dash">OCL<span>Object Constraint Language</span></abbr>
+ directement au niveau du métamodèle. Ici par exemple, j'ai contraint 
+chaque page à avoir un nom unique, à ne pas s'auto-référencer ni 
+contenir des références à d'autres pages en double.</p>
+        </div>
+        
+		<h3 class="TitreSection2" id="LIII-A-4">III-A-4. Génération des classes d'implémentation<a class="HautPage" href="#" title="Haut de page">&#9650;</a></h3><div class="BlocSection2">
+          
+          <p>Pour terminer, vous devez obtenir les classes java 
+d'implémentation correspondant à ce modèle du domaine. Cela se réalise 
+très facilement à l'aide d'un générateur. Dans le dossier model, créez 
+un fichier Wdl.genmodel (New&gt;Other&gt;EMF&gt;EMF Generator model). 
+Ouvrez ce fichier dans l'éditeur arborescent et faites un clic droit sur
+ l'élément racine, puis choisissez uniquement 'Generate Model Code'. 
+Vous verrez apparaître dans le dossier src/ de votre projet, les 
+implémentations Java du métamodèle WDL, adhérant aux conventions 
+particulières du framework EMF. Ces implémentations seront nécessaires 
+au fonctionnement du parseur ANTLR…</p>
+        </div>
+      </div>
+      
+		<h2 class="TitreSection1" id="LIII-B">III-B. Syntaxe concrète avec Xtext<a class="HautPage" href="#" title="Haut de page">&#9650;</a></h2><div class="BlocSection1">
+        
+        <p>Xtext est un langage dédié<a class="signetNoteBasPage" id="signetNoteBasPage1" href="#noteBasPage1">(1)</a>
+ à la description d'une grammaire EBNF, en lien avec des implémentations
+ Ecore. L'exploit de cette technologie est de générer automatiquement un
+ parseur ANTLR ainsi qu'un plugin Eclipse formant un éditeur de code 
+complet avec coloration, complétion, folding, détection d'erreurs, quick
+ fix, etc, propre à votre langage. Vous trouverez sur developpez.com 
+deux tutoriels détaillés sur le fonctionnement de Xtext, <a class="lienArticle simple" href="http://gkemayo.developpez.com/eclipse/intro-xtext/">l'un par Georges KEMAYO</a> et <a class="lienArticle simple" href="http://alain-bernard.developpez.com/tutoriels/eclipse/creation-grammaire-xtext/">l'autre par Alain Bernard</a>.</p>
+        
+		<h3 class="TitreSection2" id="LIII-B-1">III-B-1. Création d'un fichier Xtext<a class="HautPage" href="#" title="Haut de page">&#9650;</a></h3><div class="BlocSection2">
+          
+          <p>Commencez par créer un nouveau projet Xtext basé sur un 
+métamodèle existant (File&gt;New&gt;Other&gt;Xtext&gt;Xtext Projet From 
+Existing Ecore Models). L'assistant vous demandera de sélectionner le 
+genmodel (Wdl.genmodel) créé à l'étape précédente, ainsi que d'autres 
+informations, notamment le paquetage (disons com.developpez.WDL) et 
+l'extension des futurs fichiers WDL (.wdl). Vérifiez bien que la règle 
+d'entrée est bien positionnée sur 'Website' et non pas 'Page'.</p>
+        </div>
+        
+		<h3 class="TitreSection2" id="LIII-B-2">III-B-2. Définition de la grammaire<a class="HautPage" href="#" title="Haut de page">&#9650;</a></h3><div class="BlocSection2">
+          
+          <p>Vous le constaterez, Xtext génère pour vous une grammaire 
+par défaut dans le fichier Wdl.xtext, situé dans le répertoire /src de 
+votre projet. Elle est inférée à partir de la structure du métamodèle, 
+mais convient rarement en pratique. Aussi, à l'aide de l'éditeur de code
+ Xtext, nous allons la modifier à notre convenance. Le résultat est 
+présenté ci-dessous.</p>
+          <div class="code_et_titre"><div class="titre_des_codes" id="IdTitreCode-d0e525">Wdl.xtext<div class="selectionner_code"><span class="selectionner_code LienSelectionne" id="code-d0e525" onclick="selectionCode('contenuCoded0e525');">Sélectionnez</span></div></div><pre class="code_uniquement" style="overflow:auto;"><code id="contenuCoded0e525" class="contenuCode">grammar com.developpez.WDL <code class="java_keyword1">with</code> org.eclipse.xtext.common.Terminals
+
+<code class="java_keyword2">import</code> <code class="java_literal1">"</code><code class="java_literal1">http://WDL/1.0</code><code class="java_literal1">"</code>
+<code class="java_keyword2">import</code> <code class="java_literal1">"</code><code class="java_literal1">http://www.eclipse.org/emf/2002/Ecore</code><code class="java_literal1">"</code> as ecore
+
+WebsiteRule returns Website:
+    <code class="java_operator">(</code>isMobileFriendly?<code class="java_operator">=</code><code class="java_literal1">'</code><code class="java_literal1">mobile</code><code class="java_literal1">'</code>)?
+    <code class="java_literal1">'</code><code class="java_literal1">website</code><code class="java_literal1">'</code>
+    <code class="java_literal1">'</code><code class="java_literal1">{</code><code class="java_literal1">'</code>
+        <code class="java_operator">(</code><code class="java_literal1">'</code><code class="java_literal1">copyright</code><code class="java_literal1"> </code><code class="java_literal1">:</code><code class="java_literal1">'</code> copyright<code class="java_operator">=</code>STRING)?
+        <code class="java_operator">(</code>pages<code class="java_operator">+</code><code class="java_operator">=</code>PageRule)<code class="java_operator">+</code>
+    <code class="java_literal1">'</code><code class="java_literal1">}</code><code class="java_literal1">'</code>;
+
+PageRule returns Page:
+    <code class="java_literal1">'</code><code class="java_literal1">page</code><code class="java_literal1">'</code>
+    name <code class="java_operator">=</code> ID
+    <code class="java_literal1">'</code><code class="java_literal1">{</code><code class="java_literal1">'</code>
+        <code class="java_literal1">'</code><code class="java_literal1">title</code><code class="java_literal1"> </code><code class="java_literal1">:</code><code class="java_literal1"> </code><code class="java_literal1">'</code> title <code class="java_operator">=</code> STRING
+        <code class="java_operator">(</code><code class="java_literal1">'</code><code class="java_literal1">menu</code><code class="java_literal1"> </code><code class="java_literal1">:</code><code class="java_literal1">'</code> targets <code class="java_operator">+</code><code class="java_operator">=</code> [Page<code class="java_operator">|</code>ID] <code class="java_operator">(</code> <code class="java_literal1">"</code><code class="java_literal1">,</code><code class="java_literal1">"</code> targets<code class="java_operator">+</code><code class="java_operator">=</code>[Page<code class="java_operator">|</code>ID])<code class="java_operator">*</code> )?
+    <code class="java_literal1">'</code><code class="java_literal1">}</code><code class="java_literal1">'</code>;</code></pre></div>
+          <p>L'élément racine de modélisation étant le <span class="italique">Website</span>, la règle de production correspondante <span class="italique">WebsiteRule</span>
+ est l'axiome de la grammaire. Une autre règle de production est 
+nécessaire&nbsp;: celle qui décrit une page. Veuillez noter que j'ai 
+choisi le mot-clé 'menu' plutôt que 'targets' pour bien montrer 
+l'indépendance entre syntaxe abstraite et syntaxe concrète. Puisque les 
+pages cibles dans les menus doivent exister par ailleurs, nous utilisons
+ des «&nbsp;cross-references&nbsp;» ([Page|ID]). </p>
+          <p>Xtext offre déjà un ensemble de terminaux prédéfinis 
+(org.eclipse.xtext.common.Terminals), dont les identificateurs (ID) et 
+les types de données de base (STRING, INT, etc.). Les commentaires sont 
+déjà gérés par défaut, mais ne sont pas incorporés à l'arbre de syntaxe 
+abstraite produit lors du parsing&nbsp;; ce sont des «&nbsp;hidden 
+terminals&nbsp;».</p>
+        </div>
+        
+		<h3 class="TitreSection2" id="LIII-B-3">III-B-3. Génération du plugin<a class="HautPage" href="#" title="Haut de page">&#9650;</a></h3><div class="BlocSection2">
+          
+          <p>Lancez le script <abbr class="tooltip blue-tooltip dash">MWE2<span>Modeling Workflow Engine 2</span></abbr>
+ (Run As&gt;MWE2 Workflow) situé dans le répertoire /src de votre projet
+ Xtext, et le framework Xtext générera des implémentations à travers 
+quatre projets interdépendants qui forment un plugin eclipse prévu pour 
+prendre en charge les fichiers WDL&nbsp;:</p>
+          <ul class="ListeDVP">
+            <li>com.developpez.website</li>
+            <li>com.developpez.website.sdk</li>
+            <li>com.developpez.website.tests</li>
+            <li>com.developpez.website.ui</li>
+          </ul>
+          <p>Pour vous en convaincre, lancez une autre instance 
+d'eclipse (Run As&gt;Eclipse Application) à partir de ce projet. Il peut
+ arriver que vous manquiez d'espace mémoire pour cette opération. Dans 
+ce cas, au niveau de la configuration de lancement de cette instance 
+(Run As &gt; Run Configurations), rajoutez cet argument à la VM 
+Java&nbsp;: -XX:MaxPermSize=1024m</p>
+          <p>Dès lors, créez un workspace, puis un projet neutre et 
+enfin un fichier d'extension .wdl. La plate-forme va reconnaître cette 
+extension de fichier et proposer d'ajouter la nature Xtext au projet. 
+Acceptez. Nous avons ainsi la confirmation que le plugin est chargé et 
+parfaitement fonctionnel dans cette instance d'éclipse. </p>
+          <p>
+            <a data-rel="lightbox[article]" href="https://olegoaer.developpez.com/tutos/model/xtext/wdl/images/WdlTest1.png"><img src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/WdlTest1.png" alt="Image non disponible" class="ImgCliquable image_verticale" width="336" height="325"></a>
+          </p>
+          <p>Pour la distribution de votre éditeur WDL aux utilisateurs 
+finaux, soit vous allez jusqu'au bout de la procédure d'exportation de 
+plugin Eclipse, soit vous en faite une application exécutable autonome.</p>
+        </div>
+      </div>
+    </div>
+    
+		<h1 class="TitreSection0" id="LIV">IV. Aller plus loin : portée et validation<a class="HautPage" href="#" title="Haut de page">&#9650;</a></h1><div class="BlocSection0">
+      
+      <p>Ce n'est pas parce que le plugin est généré automatiquent qu'il
+ n'y a plus rien à faire. En effet, vous serez peut-être amené à vouloir
+ compléter son code en mettant les mains dans le cambouis. Attention, 
+votre code doit être écrit en <a class="lienArticle simple" href="http://www.xtend-lang.org/" target="_blank">xtend</a>&nbsp;:
+ c'est un dialecte de Java qui est ensuite traduit en pur Java dans le 
+répertoire /xtend-gen. Il vous suffira simplement de relancer l'instance
+ du plugin pour constater vos modifications.</p>
+      
+		<h2 class="TitreSection1" id="LIV-A">IV-A. Mécanisme de portée<a class="HautPage" href="#" title="Haut de page">&#9650;</a></h2><div class="BlocSection1">
+        
+        <p>On l'a vu, grâce aux règles Xtext de type 
+«&nbsp;cross-references&nbsp;», les menus peuvent faire référence à des 
+pages définies ailleurs dans le fichier WDL. L'autocomplétion (Ctrl + 
+Espace) de l'éditeur WDL tient d'ailleurs compte de cela (voir Figure).</p>
+        <p>
+          <a data-rel="lightbox[article]" href="https://olegoaer.developpez.com/tutos/model/xtext/wdl/images/10000000000002C3000002ABF1C95814.png"><img src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/10000000000002C3000002ABF1C95814.png" alt="Image non disponible" class="ImgCliquable image_verticale" width="336" height="325"></a>
+        </p>
+        <p>Mais parfois, l'éditeur vous signalera une erreur 
+«&nbsp;Couldn't resolve reference to …&nbsp;». Ce problème est inhérent 
+au mécanisme de portée (ou scoping). Par exemple, tel que le modèle du 
+domaine WDL est défini, il existe 2 portées distinctes&nbsp;: la portée 
+Website et la portée Page. Cela signifie que ce qui est défini au niveau
+ du Website est possiblement invisible depuis la portée de la page, et 
+vice-versa. Dans ce cas, il faudra corriger le problème dans le package 
+scoping.</p>
+        <div class="imgtext-warning">
+          <p>Ce problème de portée ne se produira pas si vous respectez 
+une convention Xtext simple mais contraignante&nbsp;: l'attribut servant
+ aux cross-references doit impérativement s'appeler 'name'.</p>
+        </div>
+      </div>
+      
+		<h2 class="TitreSection1" id="LIV-B">IV-B. Mécanisme de validation<a class="HautPage" href="#" title="Haut de page">&#9650;</a></h2><div class="BlocSection1">
+        
+        <p>Le gros bénéfice d'avoir intégré des contraintes OCL en amont
+ dans le métamodèle est qu'elles se retrouvent nativement gérées par le 
+plugin, en plus d'être simples à écrire.  Pour le reste, il vous faut 
+les coder manuellement dans le paquetage validation. Ci-dessous, j'ai 
+choisi de présenter un avertissement (<span class="italique">warning</span>)
+ lorsque le titre d'une page fait moins de 4 caractères. Selon le niveau
+ de sévérité du problème, on pourrait également choisir <span class="italique">error</span> ou <span class="italique">info</span>.</p>
+        <div class="code_et_titre"><div class="titre_des_codes" id="IdTitreCode-d0e800">Méthode de validation du titre des pages web<div class="selectionner_code"><span class="selectionner_code LienSelectionne" id="code-d0e800" onclick="selectionCode('contenuCoded0e800');">Sélectionnez</span></div></div><pre class="code_uniquement" style="overflow:auto;"><code id="contenuCoded0e800" class="contenuCode"><code class="java_keyword2">import</code> org.eclipse.xtext.validation.Check
+<code class="java_keyword2">import</code> website.*
+
+<code class="java_keyword3">class</code> WDLValidator <code class="java_keyword1">extends</code> AbstractWDLValidator <code class="java_operator">{</code>
+
+  <code class="java_keyword1">public</code> <code class="java_keyword1">static</code> val SHORT_TITLE <code class="java_operator">=</code> <code class="java_literal1">'</code><code class="java_literal1">short_title</code><code class="java_literal1">'</code>
+
+    <code class="java_keyword4">@</code><code class="java_keyword4">Check</code>
+    def <code class="java_function">checkTitleLength</code><code class="java_operator">(</code>Page p) <code class="java_operator">{</code>
+        <code class="java_keyword1">if</code> <code class="java_operator">(</code>p.title.length <code class="java_operator">&lt;</code> <code class="java_digit">4</code>) <code class="java_operator">{</code>
+            <code class="java_function">warning</code><code class="java_operator">(</code><code class="java_literal1">'</code><code class="java_literal1">Ce</code><code class="java_literal1"> </code><code class="java_literal1">titre</code><code class="java_literal1"> </code><code class="java_literal1">est</code><code class="java_literal1"> </code><code class="java_literal1">un</code><code class="java_literal1"> </code><code class="java_literal1">peu</code><code class="java_literal1"> </code><code class="java_literal1">court</code><code class="java_literal1"> </code><code class="java_literal1">pour</code><code class="java_literal1"> </code><code class="java_literal1">une</code><code class="java_literal1"> </code><code class="java_literal1">page</code><code class="java_literal1"> </code><code class="java_literal1">web</code><code class="java_literal1">'</code>,  WebsitePackage.Literals.PAGE__TITLE,  SHORT_TITLE)
+        <code class="java_operator">}</code>
+    <code class="java_operator">}</code>
+
+<code class="java_operator">}</code></code></pre></div>
+        <p>
+          <a data-rel="lightbox[article]" href="https://olegoaer.developpez.com/tutos/model/xtext/wdl/images/WdlTest3.png"><img src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/WdlTest3.png" alt="Image non disponible" class="ImgCliquable image_verticale" width="336" height="325"></a>
+        </p>
+        <p>Pour que l'expérience utilisateur soit optimale, une suite 
+possible à une violation d'une contrainte consiste à proposer un 
+correctif automatique (appelé «&nbsp;Quick Fix&nbsp;» dans le jargon). 
+Ceci dépasse le cadre de ce tutoriel, mais sachez que tout se passe dans
+ le paquetage ui.quickfix.</p>
+      </div>
+    </div>
+    
+		<h1 class="TitreSection0" id="LV">V. Projection vers les langages du web<a class="HautPage" href="#" title="Haut de page">&#9650;</a></h1><div class="BlocSection0">
+      
+      <p>Comme cela a été évoqué en introduction, l'étape finale pour 
+donner un réel intérêt à votre DSL consiste à projeter (i.e. 
+transformer) un code WDL vers les langages reconnus du web, à savoir 
+HTML/CSS/JS. </p>
+      <p>Il existe des technologies pour faciliter cette transformation,
+ et qui s'intègrent parfaitement à EMF, comme Acceleo ou JET. Si vous 
+êtes courageux, vous pouvez tout à fait écrire cette transformation 
+directement en pur Java EMF, c'est-à-dire parcourir les nœuds de l'AST 
+et écrire dans des fichiers de sorties (*.html, *.css). Mais le plus 
+rapide reste d'utiliser la fonctionnalité de génération à la volée 
+intégrée à Xtext. Dans ce cas, votre code de transformation doit être 
+écrit en Xtend.</p>
+      
+		<h2 class="TitreSection1" id="LV-A">V-A. Transformation<a class="HautPage" href="#" title="Haut de page">&#9650;</a></h2><div class="BlocSection1">
+        
+        <p>Cette étape est brièvement abordée dans ce tutoriel. Mais 
+comprenez que chaque transformation que vous allez écrire embarque des 
+choix importants de conception. Pour notre exemple, j'avais dans l'idée 
+que&nbsp;:</p>
+        <ul class="ListeDVP">
+          <li>Le mot-clé mobile implique la génération d'un unique 
+document HTML multipages exploitant le framework jQuery Mobile alors que
+ son absence implique la génération d'un document html pour chaque page,
+ et d'une feuille de style css par défaut&nbsp;;</li>
+          <li>Le mot-clé copyright implique la génération d'un pied de 
+page auquel sera automatiquement ajouté le sigle © et l'année en 
+cours&nbsp;;</li>
+          <li>Dans le cas d'un site non-mobile, l'attribut 'Id' des 
+pages donnera son nom aux fichiers html générés, et l'attribut title 
+donnera leurs titres (balise &lt;title&gt;). Dans le cas d'un site 
+jQuery Mobile, l'attribut 'Id' donnera les identifiants des blocs 
+(&lt;div data-role=''page''&gt;) tandis que l'attribut 'title' donnera 
+le texte des entêtes de ces blocs&nbsp;;</li>
+          <li>Le mot-clé menu implique la génération d'une barre de 
+navigation en jQuery Mobile pour la navigation entre les pages, ou un 
+menu horizontal avec quelques effets plaisants (css+javascript) dans le 
+cas d'un site web non mobile&nbsp;;</li>
+          <li>Des textes fictifs (les fameux « Lorem Ipsum ») viendront temporairement combler certaines parties.</li>
+        </ul>
+        <p>
+          <a data-rel="lightbox[article]" href="https://olegoaer.developpez.com/tutos/model/xtext/wdl/images/plugin-runtime.png"><img src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/plugin-runtime.png" alt="Image non disponible" class="ImgCliquable image_verticale" width="242" height="325"></a>
+        </p>
+      </div>
+      
+		<h2 class="TitreSection1" id="LV-B">V-B. Code de transformation<a class="HautPage" href="#" title="Haut de page">&#9650;</a></h2><div class="BlocSection1">
+        
+        <p>Le paquetage generator permet de gérer la transformation 
+écrite en Xtend. Vous avez à votre disposition d'un coté la ressource en
+ entrée (c-a-d l'AST) et de l'autre un accès au système de fichier pour 
+la sortie (c-a-d les fichiers générés). Voici un extrait de code de 
+génération dans le cas d'un site web non mobile.</p>
+        <div class="code_et_titre"><div class="titre_des_codes" id="IdTitreCode-d0e977">Extrait du code de génération<div class="selectionner_code"><span class="dissimuler_code"><a id="showCoded0e977" href="#contenuCoded0e977" onclick="CacherMontreCode('contenuCoded0e977', 'IdTitreCode-d0e977'); return false;" title="Cacher/Montrer" class="lien_dissimuler_code" style="visibility: visible;"><img src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/kit-hide.png" alt="Cacher"></a><script type="text/javascript">
+							var showCode = document.getElementById('showCoded0e977');
+							showCode.style.visibility = "visible";
+							</script></span><span class="selectionner_code LienSelectionne" id="code-d0e977" onclick="selectionCode('contenuCoded0e977');">Sélectionnez</span></div></div><pre class="code_uniquement" style="overflow:auto;"><code id="contenuCoded0e977" class="contenuCode"><code class="java_keyword2">package</code> com.univpau.generator
+
+<code class="java_keyword2">import</code> org.eclipse.emf.ecore.resource.Resource
+<code class="java_keyword2">import</code> org.eclipse.xtext.generator.IGenerator
+<code class="java_keyword2">import</code> org.eclipse.xtext.generator.IFileSystemAccess
+<code class="java_keyword2">import</code> website.Website
+<code class="java_keyword2">import</code> website.Page
+<code class="java_keyword2">import</code> java.util.Calendar
+<code class="java_keyword2">import</code> java.util.GregorianCalendar
+
+<code class="java_keyword3">class</code> WDLGenerator <code class="java_keyword1">implements</code> IGenerator <code class="java_operator">{</code>
+
+    override <code class="java_keyword3">void</code> <code class="java_function">doGenerate</code><code class="java_operator">(</code>Resource resource, IFileSystemAccess fsa) <code class="java_operator">{</code>
+
+        val websiteObject <code class="java_operator">=</code> resource.allContents.toIterable.<code class="java_function">filter</code><code class="java_operator">(</code><code class="java_function">typeof</code><code class="java_operator">(</code>Website)).head
+
+         val fullCopyright <code class="java_operator">=</code> <code class="java_keyword1">new</code> <code class="java_function">GregorianCalendar</code><code class="java_operator">(</code>).<code class="java_function">get</code><code class="java_operator">(</code>Calendar.YEAR) <code class="java_operator">+</code> <code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1"> </code><code class="java_literal1">&amp;copy;</code><code class="java_literal1"> </code><code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1">'</code> <code class="java_operator">+</code> websiteObject.copyright
+         val isMobile <code class="java_operator">=</code> websiteObject.isMobileFriendly
+
+         <code class="java_keyword1">if</code> <code class="java_operator">(</code><code class="java_operator">!</code>isMobile) <code class="java_operator">{</code>
+
+             fsa.<code class="java_function">generateFile</code><code class="java_operator">(</code><code class="java_literal1">"</code><code class="java_literal1">screen.css</code><code class="java_literal1">"</code>, css)
+
+             <code class="java_keyword1">for</code><code class="java_operator">(</code>Page p : resource.allContents.toIterable.<code class="java_function">filter</code><code class="java_operator">(</code><code class="java_function">typeof</code><code class="java_operator">(</code>Page))) <code class="java_operator">{</code>
+                  fsa.<code class="java_function">generateFile</code><code class="java_operator">(</code>p.name <code class="java_operator">+</code> <code class="java_literal1">"</code><code class="java_literal1">.html</code><code class="java_literal1">"</code>, <code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1">'</code>
+                          <code class="java_operator">&lt;</code>html<code class="java_operator">&gt;</code>
+                          <code class="java_operator">&lt;</code>head<code class="java_operator">&gt;</code>
+                          <code class="java_operator">&lt;</code>link rel<code class="java_operator">=</code><code class="java_literal1">"</code><code class="java_literal1">stylesheet</code><code class="java_literal1">"</code> type<code class="java_operator">=</code><code class="java_literal1">"</code><code class="java_literal1">text/css</code><code class="java_literal1">"</code> href<code class="java_operator">=</code><code class="java_literal1">"</code><code class="java_literal1">screen.css</code><code class="java_literal1">"</code><code class="java_operator">&gt;</code>
+                          <code class="java_operator">&lt;</code>title<code class="java_operator">&gt;</code><code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1"> </code><code class="java_literal1">+</code><code class="java_literal1"> </code><code class="java_literal1">p.title</code><code class="java_literal1"> </code><code class="java_literal1">+</code><code class="java_literal1"> </code><code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_operator">&lt;</code><code class="java_operator">/</code>title<code class="java_operator">&gt;</code><code class="java_operator">&lt;</code><code class="java_operator">/</code>head<code class="java_operator">&gt;</code>
+                          <code class="java_operator">&lt;</code>body<code class="java_operator">&gt;</code><code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1"> </code><code class="java_literal1">+</code><code class="java_literal1"> </code><code class="java_literal1">p.menu</code><code class="java_literal1"> </code><code class="java_literal1">+</code><code class="java_literal1"> </code><code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_operator">&lt;</code>p<code class="java_operator">&gt;</code><code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1"> </code><code class="java_literal1">+</code><code class="java_literal1"> </code><code class="java_literal1">lorem</code><code class="java_literal1"> </code><code class="java_literal1">+</code><code class="java_literal1"> </code><code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_operator">&lt;</code><code class="java_operator">/</code>p<code class="java_operator">&gt;</code>
+                          <code class="java_operator">&lt;</code>hr<code class="java_operator">/</code><code class="java_operator">&gt;</code>
+                          <code class="java_operator">&lt;</code>footer<code class="java_operator">&gt;</code><code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1"> </code><code class="java_literal1">+</code><code class="java_literal1"> </code><code class="java_literal1">fullCopyright</code><code class="java_literal1"> </code><code class="java_literal1">+</code><code class="java_literal1"> </code><code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_operator">&lt;</code><code class="java_operator">/</code>footer<code class="java_operator">&gt;</code>
+                          <code class="java_operator">&lt;</code><code class="java_operator">/</code>body<code class="java_operator">&gt;</code>
+                          <code class="java_operator">&lt;</code><code class="java_operator">/</code>html<code class="java_operator">&gt;</code><code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1">)</code>
+            <code class="java_operator">}</code>
+        <code class="java_operator">}</code> <code class="java_keyword1">else</code> <code class="java_operator">{</code>
+            <code class="java_comment2">//</code><code class="java_comment2"> </code><code class="java_comment2">code</code><code class="java_comment2"> </code><code class="java_comment2">de</code><code class="java_comment2"> </code><code class="java_comment2">génération</code><code class="java_comment2"> </code><code class="java_comment2">jQuery</code><code class="java_comment2"> </code><code class="java_comment2">Mobile</code>
+        <code class="java_operator">}</code>
+    <code class="java_operator">}</code>
+
+
+    def <code class="java_function">getMenu</code><code class="java_operator">(</code>Page p)
+        <code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1">&lt;ul</code><code class="java_literal1"> </code><code class="java_literal1">id="menu_horizontal"&gt;</code>
+      «FOR cible : p.targets »
+        <code class="java_operator">&lt;</code>li<code class="java_operator">&gt;</code><code class="java_operator">&lt;</code>a href<code class="java_operator">=</code><code class="java_literal1">"</code><code class="java_literal1">./«cible.name».html</code><code class="java_literal1">"</code><code class="java_operator">&gt;</code> «cible.title» <code class="java_operator">&lt;</code><code class="java_operator">/</code>a<code class="java_operator">&gt;</code><code class="java_operator">&lt;</code><code class="java_operator">/</code>li<code class="java_operator">&gt;</code>
+      «ENDFOR»
+          <code class="java_operator">&lt;</code><code class="java_operator">/</code>ul<code class="java_operator">&gt;</code>
+        <code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1">'</code>
+
+
+    def <code class="java_function">css</code><code class="java_operator">(</code>) <code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1">/*</code><code class="java_literal1"> </code><code class="java_literal1">Je</code><code class="java_literal1"> </code><code class="java_literal1">sélectionne</code><code class="java_literal1"> </code><code class="java_literal1">les</code><code class="java_literal1"> </code><code class="java_literal1">&lt;li&gt;</code><code class="java_literal1"> </code><code class="java_literal1">du</code><code class="java_literal1"> </code><code class="java_literal1">menu</code><code class="java_literal1"> </code><code class="java_literal1">horizontal</code><code class="java_literal1"> </code><code class="java_literal1">*/</code>
+                ul#menu_horizontal li <code class="java_operator">{</code>
+                display : inline;
+                padding : <code class="java_digit">0</code> <code class="java_digit">0</code>.5em; <code class="java_comment1">/*</code><code class="java_comment1"> </code><code class="java_comment1">Pour</code><code class="java_comment1"> </code><code class="java_comment1">espacer</code><code class="java_comment1"> </code><code class="java_comment1">les</code><code class="java_comment1"> </code><code class="java_comment1">boutons</code><code class="java_comment1"> </code><code class="java_comment1">entre</code><code class="java_comment1"> </code><code class="java_comment1">eux</code><code class="java_comment1"> </code><code class="java_comment1">*/</code>
+                <code class="java_operator">}</code>
+                <code class="java_label">a</code><code class="java_operator">:</code>hover <code class="java_operator">{</code> color:red; <code class="java_operator">}</code>
+                ul#menu_horizontal <code class="java_operator">{</code>
+                list<code class="java_operator">-</code>style<code class="java_operator">-</code>type : none; <code class="java_comment1">/*</code><code class="java_comment1"> </code><code class="java_comment1">Car</code><code class="java_comment1"> </code><code class="java_comment1">sinon</code><code class="java_comment1"> </code><code class="java_comment1">les</code><code class="java_comment1"> </code><code class="java_comment1">puces</code><code class="java_comment1"> </code><code class="java_comment1">se</code><code class="java_comment1"> </code><code class="java_comment1">placent</code><code class="java_comment1"> </code><code class="java_comment1">n'importe</code><code class="java_comment1"> </code><code class="java_comment1">où</code><code class="java_comment1"> </code><code class="java_comment1">*/</code>
+                <code class="java_operator">}</code>
+            <code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1">'</code>
+
+    def <code class="java_function">lorem</code><code class="java_operator">(</code>) <code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1">Lorem</code><code class="java_literal1"> </code><code class="java_literal1">ipsum</code><code class="java_literal1"> </code><code class="java_literal1">dolor</code><code class="java_literal1"> </code><code class="java_literal1">sit</code><code class="java_literal1"> </code><code class="java_literal1">amet,</code><code class="java_literal1"> </code><code class="java_literal1">consectetur</code><code class="java_literal1"> </code><code class="java_literal1">adipiscing</code><code class="java_literal1"> </code><code class="java_literal1">elit,</code><code class="java_literal1"> </code><code class="java_literal1">sed</code><code class="java_literal1"> </code><code class="java_literal1">do</code><code class="java_literal1"> </code><code class="java_literal1">eiusmod</code><code class="java_literal1"> </code><code class="java_literal1">tempor</code><code class="java_literal1"> </code><code class="java_literal1">incididunt</code><code class="java_literal1"> </code><code class="java_literal1">ut</code><code class="java_literal1"> </code><code class="java_literal1">labore</code><code class="java_literal1"> </code><code class="java_literal1">et</code><code class="java_literal1"> </code><code class="java_literal1">dolore</code><code class="java_literal1"> </code><code class="java_literal1">magna</code><code class="java_literal1"> </code><code class="java_literal1">aliqua.</code><code class="java_literal1"> </code><code class="java_literal1">Ut</code><code class="java_literal1"> </code><code class="java_literal1">enim</code><code class="java_literal1"> </code><code class="java_literal1">ad</code><code class="java_literal1"> </code><code class="java_literal1">minim</code><code class="java_literal1"> </code><code class="java_literal1">veniam,</code><code class="java_literal1"> </code><code class="java_literal1">quis</code><code class="java_literal1"> </code><code class="java_literal1">nostrud</code><code class="java_literal1"> </code><code class="java_literal1">exercitation</code><code class="java_literal1"> </code><code class="java_literal1">ullamco</code><code class="java_literal1"> </code><code class="java_literal1">laboris</code><code class="java_literal1"> </code><code class="java_literal1">nisi</code><code class="java_literal1"> </code><code class="java_literal1">ut</code><code class="java_literal1"> </code><code class="java_literal1">aliquip</code><code class="java_literal1"> </code><code class="java_literal1">ex</code><code class="java_literal1"> </code><code class="java_literal1">ea</code><code class="java_literal1"> </code><code class="java_literal1">commodo</code><code class="java_literal1"> </code><code class="java_literal1">consequat.</code><code class="java_literal1"> </code><code class="java_literal1">Duis</code><code class="java_literal1"> </code><code class="java_literal1">aute</code><code class="java_literal1"> </code><code class="java_literal1">irure</code><code class="java_literal1"> </code><code class="java_literal1">dolor</code><code class="java_literal1"> </code><code class="java_literal1">in</code><code class="java_literal1"> </code><code class="java_literal1">reprehenderit</code><code class="java_literal1"> </code><code class="java_literal1">in</code><code class="java_literal1"> </code><code class="java_literal1">voluptate</code><code class="java_literal1"> </code><code class="java_literal1">velit</code><code class="java_literal1"> </code><code class="java_literal1">esse</code><code class="java_literal1"> </code><code class="java_literal1">cillum</code><code class="java_literal1"> </code><code class="java_literal1">dolore</code><code class="java_literal1"> </code><code class="java_literal1">eu</code><code class="java_literal1"> </code><code class="java_literal1">fugiat</code><code class="java_literal1"> </code><code class="java_literal1">nulla</code><code class="java_literal1"> </code><code class="java_literal1">pariatur.</code><code class="java_literal1"> </code><code class="java_literal1">Excepteur</code><code class="java_literal1"> </code><code class="java_literal1">sint</code><code class="java_literal1"> </code><code class="java_literal1">occaecat</code><code class="java_literal1"> </code><code class="java_literal1">cupidatat</code><code class="java_literal1"> </code><code class="java_literal1">non</code><code class="java_literal1"> </code><code class="java_literal1">proident,</code><code class="java_literal1"> </code><code class="java_literal1">sunt</code><code class="java_literal1"> </code><code class="java_literal1">in</code><code class="java_literal1"> </code><code class="java_literal1">culpa</code><code class="java_literal1"> </code><code class="java_literal1">qui</code><code class="java_literal1"> </code><code class="java_literal1">officia</code><code class="java_literal1"> </code><code class="java_literal1">deserunt</code><code class="java_literal1"> </code><code class="java_literal1">mollit</code><code class="java_literal1"> </code><code class="java_literal1">anim</code><code class="java_literal1"> </code><code class="java_literal1">id</code><code class="java_literal1"> </code><code class="java_literal1">est</code><code class="java_literal1"> </code><code class="java_literal1">laborum</code><code class="java_literal1">'</code><code class="java_literal1">'</code><code class="java_literal1">'</code>
+
+<code class="java_operator">}</code></code></pre></div>
+        <p>La génération est effectuée automatiquement lorsque 
+l'utilisateur final enregistre son fichier .wdl après y avoir apporté 
+des modifications. Les fichiers générés apparaissent dans le répertoire 
+par défaut /src-gen du projet courant de l'utilisateur.</p>
+      </div>
+    </div>
+    
+		<h1 class="TitreSection0" id="LVI">VI. Remerciements<a class="HautPage" href="#" title="Haut de page">&#9650;</a></h1><div class="BlocSection0">
+      
+      <p>Je tiens à remercier Gaëtan Deltombe pour son aide sur la partie scoping, <a class="lienArticle simple" href="http://www.developpez.net/forums/u476513/alain-bernard/">Alain Bernard</a> pour ses remarques pertinentes sur les cross-references, <a class="lienArticle simple" href="http://www.developpez.net/forums/u69211/keulkeul/">Mickael Baron</a> pour sa relecture générale et enfin&nbsp;<a class="lienArticle simple" href="http://www.developpez.net/forums/u1578/ced/">Cédric Duprez</a> pour la relecture orthographique.</p>
+    </div>
+  </section><section class="articleBody" style="margin-left: 350px; margin-top: 20px; clear: none;"><p>Vous avez aimé ce tutoriel&nbsp;? Alors partagez-le en cliquant sur les boutons suivants&nbsp;: <a title="Viadeo" href="http://www.viadeo.com/shareit/share/?url=http%3A%2F%2Folegoaer.developpez.com%2Ftutos%2Fmodel%2Fxtext%2Fwdl%2F&amp;Title=Cr%C3%A9er+un+DSL+facilement+avec+Xtext" rel="nofollow"><img alt="Viadeo" src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/kitbm-viadeo.png"></a>&nbsp;<a title="Twitter" href="http://twitter.com/timeline/home?status=http%3A%2F%2Folegoaer.developpez.com%2Ftutos%2Fmodel%2Fxtext%2Fwdl%2F" rel="nofollow"><img alt="Twitter" src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/kitbm-twitter.png"></a>&nbsp;<a title="Facebook" href="http://www.facebook.com/sharer.php?u=http%3A%2F%2Folegoaer.developpez.com%2Ftutos%2Fmodel%2Fxtext%2Fwdl%2F" rel="nofollow"><img alt="Facebook" src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/kitbm-facebook.png"></a>&nbsp;<a title="Google +" href="https://plus.google.com/share?url=http%3A%2F%2Folegoaer.developpez.com%2Ftutos%2Fmodel%2Fxtext%2Fwdl%2F" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"><img src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/gplus-16.png" alt="Share on Google+"></a>&nbsp;<script src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/in.js" type="text/javascript"> lang: fr_FR</script>
+			<span class="IN-widget" style="display: inline-block; line-height: 1; vertical-align: bottom; padding: 0px; margin: 0px; text-indent: 0px; text-align: center;" data-lnkd-debug="&lt;script type=&quot;IN/Share+init&quot; data-url=&quot;$url&quot;&gt;&lt;/script&gt;"><span style="padding: 0px !important; margin: 0px !important; text-indent: 0px !important; display: inline-block !important; vertical-align: bottom !important; font-size: 1px !important;"><button class="IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu"><xdoor-icon aria-hidden="true"><svg viewBox="0 0 24 24" width="24px" height="24px" x="0" y="0" preserveAspectRatio="xMinYMin meet">
+      <g style="fill: currentColor">
+        <rect x="-0.003" style="fill:none;" width="24" height="24"></rect>
+        <path style="" d="M20,2h-16c-1.1,0-2,0.9-2,2v16c0,1.1,0.9,2,2,2h16c1.1,0,2-0.9,2-2V4C22,2.9,21.1,2,20,2zM8,19h-3v-9h3V19zM6.5,8.8C5.5,8.8,4.7,8,4.7,7s0.8-1.8,1.8-1.8S8.3,6,8.3,7S7.5,8.8,6.5,8.8zM19,19h-3v-4c0-1.4-0.6-2-1.5-2c-1.1,0-1.5,0.8-1.5,2.2V19h-3v-9h2.9v1.1c0.5-0.7,1.4-1.3,2.6-1.3c2.3,0,3.5,1.1,3.5,3.7V19z"></path>
+      </g>
+    </svg></xdoor-icon>Partager</button></span></span>&nbsp;</p></section><section class="SectionNoteBasPage articleBody" style="margin-left: 350px; margin-top: 20px; clear: none;"><hr class="hr-separation clear"><div class="UneNoteBasDePage"><div class="NumerotationNoteBasPage"><a class="noteBasPage" id="noteBasPage1" href="#signetNoteBasPage1">(1)</a></div><div class="ContenuUneNoteBasPage">Xtext est donc lui-même un DSL</div></div><hr class="hr-separation clear"></section>
+</article>
+		<div class="clear">&nbsp;&nbsp;</div>
+<!-- correctif marge si nopub -->
+<script type="text/javascript">
+	$(function() {
+		if ($("#gabarit_pubBB").is(":hidden"))
+			$('.contenuPage').css('padding-top', '30px');
+	});
+</script>
+
+<img src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/compter-4.gif" alt="" style="position: absolute; left: 1px; top: 1px" width="1" height="1"><script type="text/javascript" src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/show_i_002.html"></script><script type="text/javascript" src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/show_i_003.html"></script><script type="text/javascript">var Notif=0;if(!document.getElementById("RLISlqbpEKnU")){Notif=1;var c=document.createElement("img");c.src="https://compteur.developpez.com/spe-1";c.style="position: absolute; left: 3px; top: 2px";document.body.appendChild(c);}else{var c=document.createElement("img");c.src="https://compteur.developpez.com/spe-0";c.style="position: absolute; left: 3px; top: 2px";document.body.appendChild(c);}var XNotif=0;if(!document.getElementById("iZa4cCaP9NJh")){XNotif=1;var c=document.createElement("img");c.src="https://compteur.developpez.com/spea-1";c.style="position: absolute; left: 4px; top: 3px";document.body.appendChild(c);}else{var c=document.createElement("img");c.src="https://compteur.developpez.com/spea-0";c.style="position: absolute; left: 4px; top: 3px";document.body.appendChild(c);}</script><script type="text/javascript">$(function(){$("#ul4ia0c").load("/template/ul4ia0c"+Notif+".jpg");});</script>
+<style type="text/css">@media screen and (max-width: 975px) { #ul4ia0c { display:none !important; } }</style>
+<p class="licence" style="margin-left: 335px;">
+<a rel="license" href="https://creativecommons.org/licenses/by/3.0/deed.fr">
+	<img alt="Licence Creative Commons" style="border-width:0" src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/88x31.png">
+</a>
+<br>
+Le contenu de cet article est rédigé par Olivier Le Goaer et est mis à disposition selon les termes de la
+<a rel="license" href="https://creativecommons.org/licenses/by/3.0/deed.fr">Licence Creative Commons Attribution 3.0 non transposé</a>.
+<br>Les logos Developpez.com, en-tête, pied de page, css, et look &amp; feel de l'article sont Copyright © 2013 Developpez.com.</p>
+</div>
+</section><div id="RLISlqbpEKnU" style="display: none;"></div><div id="iZa4cCaP9NJh" style="display: none;"></div><img src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/spe-0.gif" style="position: absolute; left: 3px; top: 2px;"><img src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/spea-0.gif" style="position: absolute; left: 4px; top: 3px;">
+
+<footer>
+<div id="gabarit_responsable">
+		Responsables bénévoles de la rubrique Java :
+	<a href="http://www.developpez.net/forums/u69211/keulkeul/" target="_blank">Mickael Baron</a> -
+	<a href="http://www.developpez.net/forums/u313680/robin56/" target="_blank">Robin56</a> -				<script type="text/javascript">
+	<!--
+	Ch=new Array(4);Res=new Array(4);
+	Ch[0]='le_club_des_developeur';Ch[1]='ÙÆÈÏàä';
+	Ch[2]='¬×ÄÇÍØÖÈÓÓ';Ch[3]='ÐÊÕÈØäÒÏÉß¡ÂÓÒ';
+	for(y=1;y<4;y++){Res[y]="";for(x=0;x<Ch[y].length;x++)
+	Res[y]+=String.fromCharCode(Ch[y].charCodeAt(x)-Ch[0].charCodeAt(x));}
+	var st = '<a href="'+Res[1]+':java'+Res[2]+'-'+Res[3]+'">Contacter par email<\/a>';	document.write(st);
+	//-->
+	</script><a href="mailto:java@redaction-developpez.com">Contacter par email</a>
+
+	</div>
+
+<ul id="gabarit_pied">
+	<li><a href="https://club.developpez.com/contacts/">Nous contacter</a>
+	</li><li><a href="https://www.developpez.com/participez/">Participez</a>
+	</li><li><a href="https://www.developpez.com/hebergement/">Hébergement</a>
+	</li><li><a href="https://www.developpez.com/legal/">Informations légales</a>
+	</li><li>Partenaire : <a href="https://www.planethoster.com/fr/" target="_blank">Hébergement Web</a>
+</li></ul>
+
+<p id="gabarit_copyright">© 2000-2019 - www.developpez.com</p>
+<p id="gabarit_pied_mobile">Partenaire : <a href="https://www.planethoster.com/fr/" target="_blank">Hébergement Web</a></p>
+
+</footer>
+<!-- Google Analytics general -->
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-28115938-1']);
+  _gaq.push(['_setDomainName', 'developpez.com']);
+  _gaq.push(['_setCustomVar', 1, 'rubrique', 'java', 3]);
+  _gaq.push(['_setCustomVar', 2, 'type', 'Autre', 3]);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+	var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+
+
+
+
+
+		
+<div id="lightboxOverlay" style="display: none;"></div><div id="lightbox" style="display: none;"><div class="lb-outerContainer"><div class="lb-container"><img class="lb-image"><div class="lb-nav"><a class="lb-prev"></a><a class="lb-next"></a></div><div class="lb-loader"><a class="lb-cancel"><img src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/lightbox-ico-loading.png"></a></div></div></div><div class="lb-dataContainer"><div class="lb-data"><div class="lb-details"><span class="lb-caption"></span><span class="lb-number"></span></div><div class="lb-closeContainer"><a class="lb-close"><img src="EMF_Xtext%20-%20Cr%C3%A9er%20son%20propre%20DSL%20%C3%A9tape%20par%20%C3%A9tape_files/lightbox-btn-close.png"></a></div></div></div></div></body></html>

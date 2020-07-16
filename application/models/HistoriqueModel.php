@@ -1,0 +1,22 @@
+<?php
+
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+
+class HistoriqueModel extends CI_Model {
+    public function __construct()
+    {
+        parent::__construct();
+    }
+	public function getHistorique($numeroTraceur)
+        {
+            //$this->db->order_by('proprietaire.n_contribuable','DESC');
+            $sql = "select \"Traceur\".*, \"Voiture\".* ,CAST(\"Traceur\".tracer_date AS DATE) as jour, CAST(\"Traceur\".tracer_date as TIME) as heur
+				from \"Traceur\" inner join \"Voiture\"
+				on (\"Traceur\".tracer_numero = \"Voiture\".voitu_tracer_numero)
+				where  CAST(\"Traceur\".tracer_date AS DATE)  =  now()::Date and \"Voiture\".voitu_id = ".$numeroTraceur." order by voitu_id desc;";
+        	$query =  $this->db->query($sql);
+        	return $query->result();
+        }
+
+}
