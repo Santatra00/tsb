@@ -525,4 +525,4 @@ $config['rewrite_short_tags'] = FALSE;
 $config['proxy_ips'] = '';
 
 // Delais de la trace des voitures affichee sur la carte en Heure
-$config['delaisTrace'] = 10;
+$config['delaisTrace'] = 2;
