@@ -73,51 +73,51 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $active_group = 'default';
 $query_builder = TRUE;
 
-// $db['default'] = array(
-//     'dsn'   => '',
-//     'hostname' => 'localhost',
-//     'username' => 'postgres',
-//     //'password' => 'post@emitbase',
-//     'password' => 'password',
-//     'database' => 'emitrack',
-//     'dbdriver' => 'postgre',
-//     'dbprefix' => '',
-//     'pconnect' => FALSE,
-//     'db_debug' => (ENVIRONMENT !== 'production'),
-//     'cache_on' => FALSE,
-//     'cachedir' => '',
-//     'char_set' => 'utf8',
-//     'dbcollat' => 'utf8_general_ci',
-//     'swap_pre' => '',
-//     'encrypt' => FALSE,
-//     'compress' => FALSE,
-//     'stricton' => FALSE,
-//     'failover' => array(),
-//     'save_queries' => TRUE
-// );
-
-
 $db['default'] = array(
-	'dsn' => '',
-    'hostname' => '41.188.47.76',
-    // 'hostname' => '192.168.88.2',
-	'username' => 'postgres',
-	'password' => 'post@emitbase',
-	'database' => 'tsb',
-	'dbdriver' => 'postgre', //mysqli
-	'dbprefix' => '',
-	'pconnect' => FALSE,
-	'db_debug' => (ENVIRONMENT !== 'production'),
-	'cache_on' => FALSE,
-	'cachedir' => '',
-	'char_set' => 'utf8',
-	'dbcollat' => 'utf8_general_ci',
-	'swap_pre' => '',
-	'encrypt' => FALSE,
-	'compress' => FALSE,
-	'stricton' => FALSE,
-	'failover' => array(),
-	'save_queries' => TRUE,
-	'port' => '5432'
-); 
+    'dsn'   => '',
+    'hostname' => 'localhost',
+    'username' => 'postgres',
+    //'password' => 'post@emitbase',
+    'password' => 'password',
+    'database' => 'emitrack',
+    'dbdriver' => 'postgre',
+    'dbprefix' => '',
+    'pconnect' => FALSE,
+    'db_debug' => (ENVIRONMENT !== 'production'),
+    'cache_on' => FALSE,
+    'cachedir' => '',
+    'char_set' => 'utf8',
+    'dbcollat' => 'utf8_general_ci',
+    'swap_pre' => '',
+    'encrypt' => FALSE,
+    'compress' => FALSE,
+    'stricton' => FALSE,
+    'failover' => array(),
+    'save_queries' => TRUE
+);
+
+
+// $db['default'] = array(
+// 	'dsn' => '',
+//     'hostname' => '41.188.47.76',
+//     // 'hostname' => '192.168.88.2',
+// 	'username' => 'postgres',
+// 	'password' => 'post@emitbase',
+// 	'database' => 'tsb',
+// 	'dbdriver' => 'postgre', //mysqli
+// 	'dbprefix' => '',
+// 	'pconnect' => FALSE,
+// 	'db_debug' => (ENVIRONMENT !== 'production'),
+// 	'cache_on' => FALSE,
+// 	'cachedir' => '',
+// 	'char_set' => 'utf8',
+// 	'dbcollat' => 'utf8_general_ci',
+// 	'swap_pre' => '',
+// 	'encrypt' => FALSE,
+// 	'compress' => FALSE,
+// 	'stricton' => FALSE,
+// 	'failover' => array(),
+// 	'save_queries' => TRUE,
+// 	'port' => '5432'
+// ); 
 

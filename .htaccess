@@ -1,6 +1,6 @@
 RewriteEngine On
 
-RewriteBase /emitrack
+RewriteBase /tsb
 RewriteCond %{REQUEST_URI} ^system.*
 RewriteRule ^(.*)$ index.php/$1 [L]
 
