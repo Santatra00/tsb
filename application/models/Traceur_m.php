@@ -3,7 +3,7 @@
 
         function __construct(){
             parent::__construct();
-            $this->_table = "Traceur";
+            $this->_table = "traceur";
             $this->_pk = "tracer_id";
         }
 

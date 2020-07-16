@@ -6,7 +6,7 @@
             $this->_table = "Voiture";
             $this->_pk = "voitu_id";
             $this->_link = array(
-                'Traceur'=>array(
+                'traceur'=>array(
                     'columnLinked' => 'voit_tracer_numero',
                     'columnLink'   => 'tracer_numero',
                     'typeJoin'         => 'INNER'
@@ -41,7 +41,7 @@
             return $this->db->select('*')
                 ->from($this->_table)
                 ->join('Posseder', 'Posseder.poss_voitu_id = Voiture.voitu_id', 'INNER')
-                ->join('Traceur', 'Traceur.tracer_numero = Voiture.voitu_tracer_numero', 'INNER')
+                ->join('traceur', 'traceur.tracer_numero = Voiture.voitu_tracer_numero', 'INNER')
                 ->where('poss_voya_id', $voya_id)
                 ->get()
                 ->result();
