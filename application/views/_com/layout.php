@@ -149,7 +149,7 @@
                                     <img src="<?= base_url('assets/images/EMIT.jpg') ?>" alt="logo" width="80"/>
                                     <p style="margin-top: 15px; font-size: 16px;">EMIT's SchoolBUS</p>
                                     <p style="margin-top: -18px; font-size: 10px;">Application de Tracking</p>
-                                    <p style="font-size: 16px; text" id="hourSideBar"><b>14:30</b> </p>
+                                    <p style="font-size: 16px; text" id="hourSideBar"><b><?=date('H:i')?></b> </p>
                                     <p style="margin-top: -18px; font-size: 11px;" id="daySideBar">Vendredi 19 Juin 2020</p>
                                 </div>
                             </div>

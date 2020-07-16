@@ -46,12 +46,15 @@
                 ->get()
                 ->result();
         }
-        public function getWithChauffeur(){
-            return $this->db->select('MAX(date) as dateDepuis, Chauffeur.*, "voitu_matricule", "voitu_marque","voitu_edition", "voitu_nbr_place", "voitu_photo"')
+        public function getWithChauffeur($voitu_id = 0){
+            $this->db->select('MAX(date) as dateDepuis, Chauffeur.*, "voitu_matricule", "voitu_marque","voitu_edition", "voitu_nbr_place", "voitu_photo", "voitu_tracer_numero", "cond_chauf_id"')
                 ->from($this->_table)
                 ->join('Conduire', 'Conduire.cond_voitu_id = Voiture.voitu_id', 'INNER')
-                ->join('Chauffeur', 'Chauffeur.chauf_id = Conduire.cond_chauf_id', 'INNER')
-                ->group_by('"voitu_id", "chauf_id", "voitu_matricule", "voitu_marque","voitu_edition", "voitu_nbr_place", "voitu_tracer_numero", "voitu_photo"')
+                ->join('Chauffeur', 'Chauffeur.chauf_id = Conduire.cond_chauf_id', 'INNER');
+            if($voitu_id != 0){
+                $this->db->where('voitu_id', $voitu_id);
+            }
+            return $this->db->group_by('"voitu_id", "chauf_id", "voitu_matricule", "voitu_marque","voitu_edition", "voitu_nbr_place", "voitu_tracer_numero", "voitu_photo", "cond_chauf_id"')
                 ->get()
                 ->result();
         }

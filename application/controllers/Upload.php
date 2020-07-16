@@ -3,15 +3,14 @@
 
         function __construct(){
             parent::__construct();
-            $this->verify_me();
-
         }
 
         public function do_upload()
         {
             $config['upload_path']          = './uploads/';
-            $config['allowed_types']        = 'jfif|gif|jpg|png|kmz';
-            $config['max_size']             = 1000;
+            $config['allowed_types']        = 'jfif|gif|jpg|png|kmz|jpeg|JPEG|JPG|PNG|GIF';
+            $config['max_size']             = 5000;
+            $config['encrypt_name']         = TRUE;
 
             $this->load->library('upload', $config);
 

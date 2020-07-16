@@ -43,7 +43,6 @@ class MY_Model extends CI_Model {
         return $this->db->get()->$method();
     }
     
-    
     public function save($data,$id = NULL)
     {
         $this->db->set($data);        
@@ -55,7 +54,7 @@ class MY_Model extends CI_Model {
             return $id;
         } else {
             $this->db->insert($this->_table,$data);
-            // return $this->db->insert_id();
+            return $this->db->insert_id();
         }   
     } 
     public function findRow($data){

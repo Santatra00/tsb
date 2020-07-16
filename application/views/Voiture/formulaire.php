@@ -1,4 +1,4 @@
-<form class="forms-sample" id="formulaire-voiture">
+<form class="forms-sample" id="input-form"  url-save="ajouter" url-get="getVoiture">
     <input type="hidden" id="id-voiture" name="id" >
     <div class="row">
         <div class="col-sm-5">
@@ -48,10 +48,28 @@
         </div>
         <div class="col-sm-5">
             <div class="form-group">
+                <label for="exampleFormControlSelect2">Chauffeur</label>
+                <select name="cond_chauf_id" id="" class="form-control input-form" datatype='int'>
+                    <option selected disabled>Chauffeur...</option>
+                <?php
+                    if (isset($listChauffeur)){                   
+                        for ($i=0; $i < count($listChauffeur); $i++) { 
+                            $row = $listChauffeur[$i];
+                    ?>
+                            <option value="<?= $row->chauf_id?>"><?= $row->chauf_nom?><?= $row->chauf_prenom?></option>
+                        <?php        
+                        }
+                    }?>
+                </select>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <div class="form-group">
                 <label for="exampleFormControlSelect2">Photo</label>
                 <input type="file" class="form-control input-form" name="voitu_photo"
                     placeholder="Edition de la voiture" datatype="file" required>
             </div>
         </div>
+        
     </div>
 </form>

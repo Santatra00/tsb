@@ -18,15 +18,29 @@
             $this->load->model(["traceur_m", "chauffeur_m"]);
 
             $this->_data['listVoiture'] = $this->$model_name->get();
-            $this->_data['listVoiture'] = $this->chauffeur_m->get();
+            $this->_data['listChauffeur'] = $this->chauffeur_m->get();
             $this->_data['listTraceur'] = $this->traceur_m->getAllNumero();
             
             $this->charger_page();
         }
-        public function save(){
-            $model_name = $this->load_my_model();
-            $this->load->model(["traceur_m", "chauffeur_m"]);
-            
+        public function ajouter(){
+            $my_model = $this->load_my_model();
+            $this->load->model("Conduire_m");
+
+            // Enregistrer voiture
+            $dataVoiture = $this->get_all_data('post', $this->_propertiesLists['save']);
+            $idData = $this->get_all_data('post', ['id']);
+            $id = NULL;
+            if(isset($idData['id'])){
+                $id=$idData['id'];
+            }
+            $id = $this->$my_model->save($dataVoiture, $id);
+
+            // Enregistrer Chauffeur qui a conduit
+            $this->Conduire_m->save(array(
+                "cond_chauf_id"=>  $this->get_all_data('post', ['cond_chauf_id'])['cond_chauf_id'],
+                "cond_voitu_id"=> $id
+            ));
             $this->charger_page();
         } 
 
@@ -50,6 +64,13 @@
 
             $voya_id = $this->input->get('voya_id');
             $this->_data['data'] = $this->$my_model->getPositionByVoyage($voya_id);
+            $this->charger_page();
+        }
+        public function getVoiture(){
+            $my_model = $this->load_my_model();
+
+            $voitu_id = $this->input->get('id', TRUE);
+            $this->_data['data'] = $this->$my_model->getWithChauffeur($voitu_id)[0];
             $this->charger_page();
         }
     }
