@@ -86,6 +86,9 @@ function showHour(){
     if(String(heure).length == 1){
         heure = "0"+heure;
     }
+    if(String(minute).length == 1){
+        minute = "0"+minute;
+    }
     $("#hourSideBar").html("<b>"+heure+":"+minute+"</b>");
 }
 showDateInMenu();
