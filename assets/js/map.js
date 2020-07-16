@@ -372,7 +372,8 @@ function getAllVoiture(voya_id, itine_id){
           }
         }
         for (let index = 0; index < response.msg.length; index++) {
-          const voiture = response.msg[index];
+          let  voiture = response.msg[index];
+          voiture['points'] = [];
           let res ;
           res = state.voitures.find(function(v){
             return v.voitu_id == voiture.voitu_id;
