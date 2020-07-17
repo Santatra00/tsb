@@ -328,7 +328,6 @@ function showTrace(){
       "geometry": {
         "type": "LineString",
         "coordinates": state.voitures[iiVoiture].points.map(function(point){
-                        console.log(point);
                         return [point.tracer_y, point.tracer_x];
                       })
       },
