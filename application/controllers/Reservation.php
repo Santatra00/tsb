@@ -23,11 +23,14 @@
             $this->_data['date'] = $this->input->get('date'); 
             if($this->_data['date']==''){
                 $dateNow = date('d/m/Y');
-                $this->_data['date'] = substr($dateNow, 3, 2).'/'.substr($dateNow, 0, 2).'/'.substr($dateNow, 6, 4);
+                // $this->_data['date'] = substr($dateNow, 3, 2).'/'.substr($dateNow, 0, 2).'/'.substr($dateNow, 6, 4);
+                $this->_data['date'] = $dateNow;
             }   
             $this->_data['listReservation'] = $this->$model_name->getListWithAbonAndRam($this->_data['date']);
             $this->_data['listVoiture'] = $this->voiture_m->get();
-            $this->charger_page();
+
+            print_r($this->_data);
+            // $this->charger_page();
         }
         public function getReservation(){
             $model_name = $this->load_my_model();

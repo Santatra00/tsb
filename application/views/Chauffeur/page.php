@@ -110,7 +110,7 @@
             </div>
             <div class="card modal-body">
                 <div class="card-body formulaire-container" style="max-height: 65vh; overflow:auto;">
-                    <?php $this->load->view('chauffeur/formulaire') ?>
+                    <?php $this->load->view('Chauffeur/formulaire') ?>
                 </div>
             </div>
             <div class="modal-footer">
