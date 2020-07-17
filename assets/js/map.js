@@ -312,6 +312,7 @@ function getCoordonnee(){
       })
       .fail(function(err) {
         console.log(err);
+        notifier('Erreur lors de la creation de donnees', 'erreur');
       })
   }
   
@@ -328,7 +329,7 @@ function showTrace(){
         "type": "LineString",
         "coordinates": state.voitures[iiVoiture].points.map(function(point){
                         console.log(point);
-                        return [point.tracer_x, point.tracer_y];
+                        return [point.tracer_y, point.tracer_x];
                       })
       },
       "properties": {
@@ -342,16 +343,20 @@ function showTrace(){
 function showVoiturePosition(){
   for (let iiVoiture = 0; iiVoiture < state.voitures.length; iiVoiture++) {
     const voiture = state.voitures[iiVoiture];
-    if(markers[voiture.voitu_id] != undefined){
-      markers[voiture.voitu_id].remove();
+    if(voiture.points.length!=0){
+      if(markers[voiture.voitu_id] != undefined){
+        markers[voiture.voitu_id].remove();
+      }
+  
+      var el = document.createElement('div');
+          el.className = 'marker-voiture';
+      var marker = new mapboxgl.Marker(el)
+        .setLngLat([parseFloat(voiture.points[voiture.points.length - 1].tracer_y), parseFloat(voiture.points[voiture.points.length - 1].tracer_x)])
+        .addTo(map);
+      markers[voiture.voitu_id]=marker;
+    }else{
+      console.log("Donnee GPS inexistant")
     }
-
-    var el = document.createElement('div');
-        el.className = 'marker-voiture';
-    var marker = new mapboxgl.Marker(el)
-      .setLngLat([parseFloat(voiture.points[voiture.points.length - 1].tracer_x), parseFloat(voiture.points[voiture.points.length - 1].tracer_y)])
-      .addTo(map);
-    markers[voiture.voitu_id]=marker;
   }
 }
 

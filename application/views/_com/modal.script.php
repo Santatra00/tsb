@@ -53,8 +53,10 @@
                     success: function(response){
                         getPage();
                     },
-                    error: function(eror){
+                    error: function(error){
                         // Notifier erreur
+                        notifier("Erreur de suppression", 'erreur');
+                        console.log(error);
                     }
                 });
             })
@@ -80,6 +82,8 @@
                     error: function(error){
                         // Notifier erreur
                         dataDetails = {};
+                        notifier("Erreur d'affichage de details", 'erreur');
+                        console.log(error);
                     }
                 });
             })
@@ -118,9 +122,11 @@
                     },
                     error: function(error){
                         $(this).html(contenueButton);
+                        console.log(error);
                     }
                 });
             })
-            $("#datatable").DataTable()
+            $("#datatable").DataTable();
+            $(".notifyjs-corner").css('font-size','13px');
         })
     </script>

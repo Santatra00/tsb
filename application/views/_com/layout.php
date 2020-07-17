@@ -356,6 +356,7 @@
     <?php } } ?>
     <script>
         var popState = false; 
+        
         var stateSidebarTrajet = 0;
         var imageSidebarTrajet = [
             "<?= base_url('./assets/images/vehicles-set_1308-31099-bus.jpg') ?>",
@@ -431,10 +432,10 @@
             classes: {
                 base: {
                     "white-space": "nowrap",
-                    "background-color": "rgba(255, 255, 255, 0.9)",
+                    "background-color": "rgba(255, 255, 255, 0.94)",
                     "padding": "6px",
                     "border-radius": "10px",
-                    "box-shadow": "0 2px 5px rgba(0, 0, 0, 0.06)",
+                    "box-shadow": "0 2px 5px rgba(0, 0, 0, 0.12)",
                     "transition": "height 2s linear",
                     "margin-top": "10px"
                 },
@@ -444,15 +445,38 @@
                 }
             }
         });
+        $.notify.addStyle('erreur', {
+            html: "<div style='margin-right: 8px;'><img src='<?=base_url('assets/images/delete_64px.png')?>' width='18' height='18' style='margin-left: 4px; margin-right: 8px; margin-bottom: 1px;  margin-top: 1px;'/><span data-notify-text/></div>",
+            classes: {
+                base: {
+                    "white-space": "nowrap",
+                    "background-color": "rgba(255, 255, 255, 0.97)",
+                    "padding": "6px",
+                    "border-radius": "7px",
+                    "box-shadow": "0 2px 5px rgba(0, 0, 0, 0.12)",
+                    "transition": "height 2s linear",
+                    "margin-top": "10px"
+                },
+                superblue: {
+                    "color": "white",
+                    "background-color": "blue"
+                }
+            }
+        });
+
         function notifier(msg, type = 'message'){
             if(type == 'message'){
                 $.notify(msg, {
                     style: 'happyblue'
                 });
             }else{
-                $.notify(msg, type);
+                $.notify(msg, {
+                    style: type
+                });
             }
         }
+        notifier('Chargement en cours ...');
+        $(".notifyjs-corner").css('font-size','13px');
 
     </script>
 </body>
