@@ -22,9 +22,9 @@
 
             $this->_data['date'] = $this->input->get('date'); 
             if($this->_data['date']==''){
-                $dateNow = date('d/m/Y');
-                // $this->_data['date'] = substr($dateNow, 3, 2).'/'.substr($dateNow, 0, 2).'/'.substr($dateNow, 6, 4);
-                $this->_data['date'] = $dateNow;
+                $this->_data['date'] = date('d/m/Y');
+                // si la datestyle est comme m/d/Y decommenter la ligne ci-dessus
+                // $this->_data['date'] = date('m/d/Y');
             }   
             $this->_data['listReservation'] = $this->$model_name->getListWithAbonAndRam($this->_data['date']);
             $this->_data['listVoiture'] = $this->voiture_m->get();
