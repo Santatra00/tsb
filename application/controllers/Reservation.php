@@ -29,8 +29,8 @@
             $this->_data['listReservation'] = $this->$model_name->getListWithAbonAndRam($this->_data['date']);
             $this->_data['listVoiture'] = $this->voiture_m->get();
 
-            print_r($this->_data);
-            // $this->charger_page();
+            // print_r($this->_data);
+            $this->charger_page();
         }
         public function getReservation(){
             $model_name = $this->load_my_model();
