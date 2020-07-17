@@ -24,7 +24,7 @@
                 ->get()
                 ->result();
         }
-        public function getInVoyageNow($itine_id){
+        public function getInVoyageNow(){
             // L'heure utiliser est l'heure de POSTGRES comme toujours
             // get voiture actuellement en voyage
             return $this->db->select('Posseder.*, Voiture.*')

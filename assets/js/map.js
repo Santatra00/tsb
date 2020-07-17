@@ -41,6 +41,7 @@ map.on('load', function() {
     }
   });
   getAllTrajet();
+  getAllVoiture();
   tick(function(){
     if(isVoitureIsLoad){
       getCoordonnee();
@@ -358,7 +359,7 @@ function getAllThing(){
 
 }
 
-function getAllVoiture(voya_id, itine_id){
+function getAllVoiture(voya_id = 0, itine_id = 0){
   // get all voiture
   // SI le voyage est 0 ca veux dire que aucunne voyage en particulier n'est choisi, 
   // ce qui veux dire que on get all voiture in a intervall and day
@@ -367,25 +368,24 @@ function getAllVoiture(voya_id, itine_id){
       for (let iVoiture = 0; iVoiture < response.msg.length; iVoiture++) {
         const voiture = response.msg[iVoiture];
         for (let index = 0; index < state.itineraires.length; index++) {
-          if(state.itineraires[index].itine_id == voiture.poss_itine_id){
-            state.itineraires[index]['voitures'].push(voiture);
+          if(voiture.poss_itine_id != undefined){
+            if(state.itineraires[index].itine_id == voiture.poss_itine_id){
+              state.itineraires[index]['voitures'].push(voiture);
+            }
           }
         }
-        for (let index = 0; index < response.msg.length; index++) {
-          let  voiture = response.msg[index];
-          voiture['points'] = [];
-          let res ;
-          res = state.voitures.find(function(v){
-            return v.voitu_id == voiture.voitu_id;
-          });
-          if(res == undefined){
-            state.voitures.push(voiture);
-          }
-        }
-
-        
       }
-
+      for (let index = 0; index < response.msg.length; index++) {
+        let voiture = response.msg[index];
+        voiture['points'] = [];
+        let res ;
+        res = state.voitures.find(function(v){
+          return v.voitu_id == voiture.voitu_id;
+        });
+        if(res == undefined){
+          state.voitures.push(voiture);
+        }
+      }
       showVoitureList();
       isVoitureIsLoad = true;
     })
@@ -512,6 +512,7 @@ $(function(){
       // getAllVoiture({id_voyage});
     }else{
       getAllTrajet();
+      getAllVoiture();
     }
   })
   console.log('event declared');

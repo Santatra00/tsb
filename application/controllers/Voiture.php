@@ -52,9 +52,12 @@
 
             if($voya_id != 0){
                 $this->_data['data'] = $this->$model_name->getByVoyage($voya_id, $itine_id);
-            }else{
+            }else if($itine_id != 0){
                 // get all voiture in voyage now
                 $this->_data['data'] = $this->$model_name->getInVoyageNow($itine_id);
+            }else{
+                // get all voiture
+                $this->_data['data'] = $this->$model_name->get();
             }
             $this->charger_page();
         }
