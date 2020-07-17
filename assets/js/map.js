@@ -94,7 +94,7 @@ var state = {
 var kmlStore=[];
 var rechercheEnCours = 0;
 var trajetTest = [];
-var tickTiming = 15;
+var tickTiming = 20;
 function tick(callback = false){
   setInterval(() => {
     if(callback){callback()}
