@@ -95,6 +95,7 @@ var kmlStore=[];
 var rechercheEnCours = 0;
 var trajetTest = [];
 var tickTiming = 20;
+
 function tick(callback = false){
   setInterval(() => {
     if(callback){callback()}
@@ -118,9 +119,9 @@ function showItineraireList(){
 
   for (let index = 0; index < state.itineraires.length; index++) {
     const itineraire = state.itineraires[index];
-    itineraireHtml += '<li class="card nav-item m-2 p-1" style="background-color: white; height: 240px;"><p class="mt-1 ml-2"><b>Itineraire ';
+    itineraireHtml += '<li class="card nav-item m-2 p-1" style="background-color: white; height: 240px;"> <label for="itineraire' +itineraire.itine_id+ '"><p class="mt-1 ml-2"><b>Itineraire ';
     itineraireHtml += (index+1);
-    itineraireHtml += '</b>: '+itineraire.itine_nom +'<br>';
+    itineraireHtml += '</b>: '+itineraire.itine_nom +'<input type="checkbox" class="itineraireListId" id="itineraire' +itineraire.itine_id+ '" name="itineraire" style="float: right;" onchange="actualiserListItineraire()"/><br>';
     if(itineraire.voitures.length != 0){
       itineraireHtml += '<div id="voiture-i'+itineraire.itine_id+'"></div>'
     }
@@ -130,10 +131,14 @@ function showItineraireList(){
     // <p class="mt-1 ml-2"><b>Transport: 23 personnes</b><br>
     //     a Ampasambazaha
     // </p>
-    itineraireHtml +='</li> ';
+    itineraireHtml +='</label></li> ';
   }
   $("#itineraireList").html(itineraireHtml);
   
+}
+function actualiserListItineraire(){
+  let list = $(".itineraireList")
+  console.log('')
 }
 function showVoitureList(){
   let isVoitureExist = false;
@@ -351,6 +356,7 @@ function showVoiturePosition(){
           el.className = 'marker-voiture';
       var marker = new mapboxgl.Marker(el)
         .setLngLat([parseFloat(voiture.points[voiture.points.length - 1].tracer_y), parseFloat(voiture.points[voiture.points.length - 1].tracer_x)])
+        .setPopup(new mapboxgl.Popup().setHTML("<h1>"+voiture.voitu_marque+":"+voiture.voitu_matricule+"</h1>"))
         .addTo(map);
       markers[voiture.voitu_id]=marker;
     }else{

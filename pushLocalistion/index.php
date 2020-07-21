@@ -1,22 +1,32 @@
 <?php 
 header('Content-Type: application/json');
- require __DIR__ . '\vendor\autoload.php';
- require __DIR__ . '\vendor\autoload.php';
-      // dl('php_pgsql.dll');
+require __DIR__ . '\vendor\autoload.php';
+require __DIR__ . '\vendor\fonctions.php';
+// dl('php_pgsql.dll');
 
+// Configuration de l'application
+$timeOfCycle = 20;
+$etatApplication = "ACTIVE";
+
+// Configuration de la BD
+$dbName = 'tsb';
+$host = '41.188.47.76';
+$utilisateur = 'postgres';
+$motDePasse = 'post@emitbase';
+$port='5432';
+$dns = 'pgsql:host='.$host .';dbname='.$dbName.';port='.$port;
+
+// Boucle principale
 while(true){
+  sleep($timeOfCycle);
+  $rows = [];
 
-  sleep(20);
   try {
-    $dbName = 'tsb';
-    $host = '41.188.47.76';
-    $utilisateur = 'postgres';
-    $motDePasse = 'post@emitbase';
-    $port='5432';
-    $dns = 'pgsql:host='.$host .';dbname='.$dbName.';port='.$port;
+    // Connection
     $connection = new PDO( $dns, $utilisateur, $motDePasse,array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
     $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    // Requete voiture
     $sqll = 'select count("Voiture".*) from "Voiture"';
     $stmtt = $connection->prepare($sqll);
     $stmtt->execute();
@@ -34,9 +44,46 @@ while(true){
     echo "Connection à la BDD impossible : ", $e->getMessage();
     die();
   }
-             
+
+  switch ($etatApplication) {
+    case 'ACTIVE':
+      $timeOfCycle = 20;
+      // verifier pour chaque voiture s'il est hors trajet
+        // select voyage en cours + itineraire
+        // verifier si chaque point du trajet(position superieur a celle montionnee dernierement)
+        //  durant cette voyage est dans la route
+
+      // verifier vitesse (MAX, MIN, NORMAL)
+      // isExistVoyageProche
+        // Load voyage proche
+          // Mettre en ecoute pour chaque voyages s'il doivent etre commencer ou terminer
+      // else
+        // set state SLOW
+      break;
+    case 'PREPARATION':
+      // Load voyage proche
+        // Mettre en ecoute pour chaque voyages s'il doivent etre commencer
+      $timeOfCycle = 45;
+      break;
+    case 'SLOW':
+      // isExistVoyageProche
+        // set state PREPARATION
+      // else
+        // isExistQueVoyageLoin
+          // set state DESACTIVE
+        // else continue
+      $timeOfCycle = 5 * 60;
+      break;
+    default:
+      // isExistVoyageOnDay
+        // set state SLOW
+      $timeOfCycle = 10 * 60;
+      $etatApplication = 'DESACTIVE';
+      break;
+  }
+
+  // Envoye de donnees
   $resultat =  json_encode($rows);
-  echo $resultat;
   $options = array(
     'cluster' => 'mt1',
     'useTLS' => true
@@ -47,8 +94,6 @@ while(true){
     '1021403',
     $options
   );
-
   $pusher->trigger('my-channel', 'my-event', $resultat, null, false, true);
-  echo "mandeha";
-
+  echo "Envoye de donnees[state::".$etatApplication."]";
 }
