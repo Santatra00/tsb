@@ -19,7 +19,6 @@ try {
 
 // Boucle principale
 while(true){
-  sleep($timeOfCycle);
   $rows = [];
 
   try {
@@ -53,6 +52,12 @@ while(true){
     case 'PREPARATION':
       // Load voyage proche
         // Mettre en ecoute pour chaque voyages s'il doivent etre commencer
+      $voyages = $connection->getVoyageProche();
+      for ($index=0; $index < count($voyages); $index++) { 
+        $voyage = $voyages[$index];
+        // get voiture 
+        // canBegin($voyage);
+      }
       $timeOfCycle = 45;
       break;
     case 'SLOW':
@@ -62,13 +67,25 @@ while(true){
         // isExistQueVoyageLoin
           // set state DESACTIVE
         // else continue
+      if($connection->isExistVoyageProche()){
+        $etatApplication = 'PREPARATION';
+      }else{
+        if(!$connection->isExistVoyageNow()){
+          $etatApplication = 'DESACTIVE';
+        }
+      }
+      
       $timeOfCycle = 5 * 60;
       break;
     default:
       // isExistVoyageOnDay
         // set state SLOW
-      $timeOfCycle = 10 * 60;
-      $etatApplication = 'DESACTIVE';
+      if($connection->isExistVoyageNow()){
+        $etatApplication = 'SLOW';
+      }else{
+        $timeOfCycle = 10 * 60;
+        $etatApplication = 'DESACTIVE';
+      }
       break;
   }
 
@@ -86,4 +103,5 @@ while(true){
   );
   $pusher->trigger('my-channel', 'my-event', $resultat, null, false, true);
   echo "Envoye de donnees[state::".$etatApplication."]";
+  sleep($timeOfCycle);
 }

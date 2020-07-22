@@ -49,7 +49,7 @@
             $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
 
-        function countVoiture(){
+        public function countVoiture(){
             // retourne le nombre de voiture enregistrer
             $query = 'select count("Voiture".*) from "Voiture"';
             $statement = $this->connection->prepare($query);
@@ -57,7 +57,7 @@
             return $statement->fetchAll(PDO::FETCH_ASSOC);
         }
 
-        function getPositionVoiture($number){
+        public function getPositionVoiture($number){
             // retourne la position actuelle de la voiture
             // le parametre {number} designe le nombre de voiture en cours
             $query = 'select tracer_x, tracer_y, tracer_date, voitu_id, voitu_matricule, chauf_id, chauf_nom, chauf_prenom
@@ -67,5 +67,33 @@
             $stmt = $this->connection->prepare($query);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        public function isExistVoyageNow(){
+            // retourne si oui ou non il existe une voyage qui se date aujourd'hui
+            $query = 'select count(Voyage.*) from public."Voyage" where voya_date = (SELECT CURRENT_DATE);';
+            $stmt = $this->connection->prepare($query);
+            $stmt->execute();
+            $row =  $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if(count($row[0][count])>0){
+                return TRUE;
+            }else{
+                return FALSE;
+            }
+        }
+
+        public function isExistVoyageProche(){
+            // retourne s'il y a une voyage entre cette instant et dans 2 heure
+            $query = 'select count(Voyage.*) from public."Voyage" where 
+                        voya_date = (SELECT CURRENT_DATE) and
+                        (date "voya_date" + time "voya_heure_depart") BETWEEN CURRENT_TIMESTAMP(0) AND (CURRENT_TIMESTAMP(0) + time"02:00");';
+            $stmt = $this->connection->prepare($query);
+            $stmt->execute();
+            $row =  $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if(count($row[0][count])>0){
+                return TRUE;
+            }else{
+                return FALSE;
+            }
         }
     }
