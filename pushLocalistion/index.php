@@ -8,13 +8,14 @@ require __DIR__ . '\vendor\fonctions.php';
 $timeOfCycle = 20;
 $etatApplication = "ACTIVE";
 
-// Configuration de la BD
-$dbName = 'tsb';
-$host = '41.188.47.76';
-$utilisateur = 'postgres';
-$motDePasse = 'post@emitbase';
-$port='5432';
-$dns = 'pgsql:host='.$host .';dbname='.$dbName.';port='.$port;
+// Creation de l'objet connection et initialisation de la connection
+$connection = '';
+try {
+  $connection = new Connection();
+} catch (Exception $e) {
+  echo "Echec de la connection de la base de donnee---->".$e->getMessage();
+  die();
+}
 
 // Boucle principale
 while(true){
@@ -22,26 +23,15 @@ while(true){
   $rows = [];
 
   try {
-    // Connection
-    $connection = new PDO( $dns, $utilisateur, $motDePasse,array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
-    $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // get nombre de voiture
+    $numberVoitures = $connection->countVoiture();
+    print_r($numberVoitures);
 
-    // Requete voiture
-    $sqll = 'select count("Voiture".*) from "Voiture"';
-    $stmtt = $connection->prepare($sqll);
-    $stmtt->execute();
-    $rowss = $stmtt->fetchAll(PDO::FETCH_ASSOC);
-    print_r($rowss);
-    $sql = 'select tracer_x, tracer_y, tracer_date, voitu_id, voitu_matricule, chauf_id, chauf_nom, chauf_prenom
-      from public."traceur", public."Voiture", public."Conduire", public."Chauffeur"
-      where (tracer_numero = voitu_tracer_numero) and (voitu_id = cond_voitu_id)
-      and (chauf_id = cond_chauf_id) order by voitu_id, tracer_date desc limit '.$rowss[0][count].';';
-    $stmt = $connection->prepare($sql);
-    $stmt->execute();
-    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // get position de la voiture
+    $rows = $connection->getPositionVoiture($numberVoitures[0][count]);
 
   } catch ( Exception $e ) {
-    echo "Connection à la BDD impossible : ", $e->getMessage();
+    echo "Erreur lors du lancement de la requette : ", $e->getMessage();
     die();
   }
 

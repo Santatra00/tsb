@@ -141,7 +141,7 @@
 
                 $idData = $this->get_all_data('get', ['id']);
                 $data = [];
-                if ($idData['id'] != ''){
+                if (isset($idData['id'])){
                     $data = $this->$model_name->get($idData['id'], TRUE);
                 }else{
                     $data = $this->$model_name->get();

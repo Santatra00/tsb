@@ -1,0 +1,7 @@
+{
+    "host" : "41.188.47.76",
+    "dbName":"tsb",
+    "utilisateur": "postgres",
+    "motDePasse": "post@emitbase",
+    "port": "5432"
+}
