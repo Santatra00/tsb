@@ -31,4 +31,18 @@
                 ->get()
                 ->result();
         }
+        public function getByPseudoEtudiant($pseudo){
+            $this->db->select('abon_id, date_validite, nombre_ticket, abon_etu_id')
+                ->from($this->_table);
+            return $this->link('Etudiant')
+                    ->where(array(
+                        'nombre_ticket > 0'=>NULL,
+                        'date_validite >= (SELECT CURRENT_DATE)'=>NULL,
+                        'Etudiant.pseudo'=>$pseudo
+                    ))
+                    ->limit(1)
+                    ->order_by('date_validite asc')
+                    ->get()
+                    ->result();
+        }
     }

@@ -108,5 +108,4 @@
             $data = $this->$model_name->getNombreByDateAndItineraire($condition);
             $this->send_response($data);
         }
-
     }
