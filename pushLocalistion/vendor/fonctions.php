@@ -21,11 +21,14 @@
     }
     function addNew($originales, $all){
         for ($i=0; $i < count($all); $i++) { 
+            $voyage = NULL;
             for ($j=0; $j < count($originales); $j++) { 
-                
+                if($all[$i]['voya_id'] != $originales[$j]['voya_id']){
+                    $voyage = $all[$i];
+                }
             }
-            if(isset($voyage)&$voyage!= NULL){
-                array_push($originales, $voyage);
+            if(isset($voyage)&$voyage != NULL){
+                array_push($originales, $all[$i]);
             }
         }
         return $originales;
