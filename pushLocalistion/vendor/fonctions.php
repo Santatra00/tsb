@@ -19,6 +19,17 @@
     function getVoyage(){
 
     }
+    function addNew($originales, $all){
+        for ($i=0; $i < count($all); $i++) { 
+            for ($j=0; $j < count($originales); $j++) { 
+                
+            }
+            if(isset($voyage)&$voyage!= NULL){
+                array_push($originales, $voyage);
+            }
+        }
+        return $originales;
+    }
     class Connection{
         // Configuration de la BD
         protected $dbName;
@@ -82,11 +93,11 @@
             }
         }
 
-        public function isExistVoyageProche(){
+        public function isExistVoyageAfter($minute){
             // retourne s'il y a une voyage entre cette instant et dans 2 heure
             $query = 'select count(Voyage.*) from public."Voyage" where 
                         voya_date = (SELECT CURRENT_DATE) and
-                        (date "voya_date" + time "voya_heure_depart") BETWEEN CURRENT_TIMESTAMP(0) AND (CURRENT_TIMESTAMP(0) + time"02:00");';
+                        (date "voya_date" + time "voya_heure_depart") BETWEEN CURRENT_TIMESTAMP(0) AND (CURRENT_TIMESTAMP(0) + time"00:'.$minute.'");';
             $stmt = $this->connection->prepare($query);
             $stmt->execute();
             $row =  $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -95,5 +106,15 @@
             }else{
                 return FALSE;
             }
+        }
+        public function getVoyageAfter($minute){
+            // retourne s'il y a une voyage entre cette instant et dans 2 heure
+            $query = 'select Voyage.* from public."Voyage" where 
+                        voya_date = (SELECT CURRENT_DATE) and
+                        (date "voya_date" + time "voya_heure_depart") BETWEEN CURRENT_TIMESTAMP(0) AND (CURRENT_TIMESTAMP(0) + time"00:'.$minute.'");';
+            $stmt = $this->connection->prepare($query);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
         }
     }

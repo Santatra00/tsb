@@ -48,17 +48,20 @@ while(true){
           // Mettre en ecoute pour chaque voyages s'il doivent etre commencer ou terminer
       // else
         // set state SLOW
-      break;
-    case 'PREPARATION':
-      // Load voyage proche
-        // Mettre en ecoute pour chaque voyages s'il doivent etre commencer
-      $voyages = $connection->getVoyageProche();
-      for ($index=0; $index < count($voyages); $index++) { 
-        $voyage = $voyages[$index];
-        // get voiture 
-        // canBegin($voyage);
-      }
-      $timeOfCycle = 45;
+      
+      // get voyage concerned in 5Min
+      $allVoyage = $connection->getVoyageAfter(5);
+      $voyages = addNew($voyages, $allVoyage);
+      
+
+      // get voiture concerned 
+      
+      // si (inTrajet(voiture))
+        // si isVoyageBegin(voiture)
+          // 
+        // else
+          // beginVoyage(voiture) commencer le voyage pour cette voiture
+      // else
       break;
     case 'SLOW':
       // isExistVoyageProche
@@ -67,14 +70,13 @@ while(true){
         // isExistQueVoyageLoin
           // set state DESACTIVE
         // else continue
-      if($connection->isExistVoyageProche()){
-        $etatApplication = 'PREPARATION';
+      if($connection->isExistVoyageAfter(10)){
+        $etatApplication = 'ACTIVE';
       }else{
         if(!$connection->isExistVoyageNow()){
           $etatApplication = 'DESACTIVE';
         }
       }
-      
       $timeOfCycle = 5 * 60;
       break;
     default:

@@ -356,7 +356,7 @@ function showVoiturePosition(){
           el.className = 'marker-voiture';
       var marker = new mapboxgl.Marker(el)
         .setLngLat([parseFloat(voiture.points[voiture.points.length - 1].tracer_y), parseFloat(voiture.points[voiture.points.length - 1].tracer_x)])
-        .setPopup(new mapboxgl.Popup().setHTML("<h1>"+voiture.voitu_marque+":"+voiture.voitu_matricule+"</h1>"))
+        .setPopup(new mapboxgl.Popup().setHTML("<h3>"+voiture.voitu_marque+":"+voiture.voitu_matricule+"</h3>"))
         .addTo(map);
       markers[voiture.voitu_id]=marker;
     }else{

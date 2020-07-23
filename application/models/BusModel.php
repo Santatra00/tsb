@@ -32,7 +32,7 @@ order by public.\"Voiture\".voitu_id desc;";
         $qu =  $this->db->query($sqll);
         $nombre = $qu->result()[0]->count;
         $sql = 'select tracer_x, tracer_y, tracer_date, voitu_id, voitu_matricule, chauf_id, chauf_nom, chauf_prenom
-        from public."Traceur", public."Voiture", public."Conduire", public."Chauffeur"
+        from traceur, public."Voiture", public."Conduire", public."Chauffeur"
         where (tracer_numero = voitu_tracer_numero) and (voitu_id = cond_voitu_id)
         and (chauf_id = cond_chauf_id) order by voitu_id, tracer_date desc limit '.$nombre.';';
         $query =  $this->db->query($sql);
