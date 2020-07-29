@@ -32,7 +32,7 @@
             echo json_encode($res);
         }
         public function insertReservation(){
-
+            
             // Decrementation du nombre de ticket
             $this->load->model('Abonnement_m');
             $idData =  $this->get_all_data('post', ['reserv_abon_id']);
@@ -146,5 +146,30 @@
                 }
             }
             return $dataNeeded;
+        }
+
+        public function getRamassageByItineraire(){
+            $this->load->model('Ramassage_m');
+
+            $itine_id = $this->input->get('itine_id');
+            $data = $this->Ramassage_m->getByItineraire($itine_id);
+            header('Content-type: application/json');
+            echo json_encode(array(
+                "status"=>TRUE,
+                "message"=> "Liste des points de ramassages by itineraire",
+                "data"=>$data
+            ));
+        }
+        public function getItineraire(){
+            $this->load->model('Itineraire_m');
+
+            $itine_id = $this->input->get('itine_id');
+            $data = $this->Itineraire_m->get($itine_id, TRUE);
+            header('Content-type: application/json');
+            echo json_encode(array(
+                "status"=>TRUE,
+                "message"=> "Itineraire",
+                "data"=>$data
+            ));
         }
     }

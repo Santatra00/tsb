@@ -297,7 +297,7 @@
                     </div>
                     <!-- Fin contenu -->
                     <!-- Debut footer -->
-                    <footer class="footer">
+                    <footer class="footer" style="display: none;">
                         <div class="container-fluid clearfix">
                             <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © 2020
                                 <a href="http://www.bootstrapdash.com/" target="_blank">iTDC MADA</a>. All rights reserved.

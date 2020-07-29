@@ -3,5 +3,6 @@
     "dbName":"tsb",
     "utilisateur": "postgres",
     "motDePasse": "post@emitbase",
-    "port": "5432"
+    "port": "5432",
+    "vitesseMax": "70"
 }

@@ -52,6 +52,9 @@
                                 Y
                             </th>
                             <th>
+                                Emplacement
+                            </th>
+                            <th>
                                 Actions
                             </th>
                         </tr>
@@ -70,6 +73,9 @@
                                 <td><?= $row->point_itine_nom?></td>
                                 <td><?= $row->point_x?></td>
                                 <td><?= $row->point_y?></td>
+                                <?= ($row->point_bout_trajet == 't')?'<td class="badge badge-pill badge-primary mt-2 text-center" style="font-weight: 400;">Au bout</td>':'<td class="badge badge-pill badge-secondary mt-2 text-center" style="color: black; font-weight: 400;">Au millieu</td>' ?>
+                                
+
                                 <td>
                                     <div class="btn-group" role="group" aria-label="Basic example">
                                         <button type="button" class="btn btn-secondary btn-detail" id="<?= $row->point_id;?>">

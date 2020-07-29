@@ -75,7 +75,7 @@
             // retourne la position actuelle de la voiture
             // le parametre {number} designe le nombre de voiture en cours
             $query = 'select tracer_x, tracer_y, tracer_date, voitu_id, voitu_matricule, chauf_id, chauf_nom, chauf_prenom
-                from public."traceur", public."Voiture", public."Conduire", public."Chauffeur"
+                from traceur, public."Voiture", public."Conduire", public."Chauffeur"
                 where (tracer_numero = voitu_tracer_numero) and (voitu_id = cond_voitu_id)
                 and (chauf_id = cond_chauf_id) order by voitu_id, tracer_date desc limit '.$number.';';
             $stmt = $this->connection->prepare($query);
@@ -110,6 +110,7 @@
                 return FALSE;
             }
         }
+        
         public function getVoyageAfter($minute){
             // retourne s'il y a une voyage entre cette instant et dans 2 heure
             $query = 'select Voyage.* from public."Voyage" where 
@@ -118,6 +119,24 @@
             $stmt = $this->connection->prepare($query);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
+        }
+
+        public function positionOutOfTrajet($voitu_id, $tracer_id){
+            // retourne s'il y a une voyage entre cette instant et dans 2 heure
+            $query = 'select Voyage.* from public."Voyage" where 
+                        voya_date = (SELECT CURRENT_DATE) and
+                        (date "voya_date" + time "voya_heure_depart") BETWEEN CURRENT_TIMESTAMP(0) AND (CURRENT_TIMESTAMP(0) + time"00:'.$minute.'");';
+            $stmt = $this->connection->prepare($query);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        public function finVoyageVoiture($voitu_id, $voya_id){
+            // Mettre cette instant la fin du voyage de cette voiture
+            $query = 'select Voyage.* from public."Voyage" where 
+                        voya_date = (SELECT CURRENT_DATE) and
+                        (date "voya_date" + time "voya_heure_depart") BETWEEN CURRENT_TIMESTAMP(0) AND (CURRENT_TIMESTAMP(0) + time"00:'.$minute.'");';
+            $stmt = $this->connection->prepare($query);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
     }

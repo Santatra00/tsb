@@ -38,6 +38,14 @@
                     placeholder="Y du point" required>
             </div>
         </div>
-        
-    </div>
+        <div class="col-sm-5">
+            <div class="form-group">
+                <label for="point_bout_trajet" style="vertical-align: bottom;">Bout de trajet</label>
+                <input type="checkbox" id="point_bout_trajet" 
+                    class="form-control input-form" 
+                    style="display: inline; width: 50px;"
+                    name="point_bout_trajet">
+            </div>
+        </div>
+    <div>
 </form>

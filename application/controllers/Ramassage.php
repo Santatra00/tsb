@@ -6,7 +6,7 @@
             $this->load->library(array('ion_auth'));
             $this->_data['name_controller'] = $this->uri->rsegments[1];
             $this->set_client_type($this->input->get('me'));
-            $this->_propertiesLists['save'] =  ['point_nom', 'point_x', 'point_y', 'point_itine_id'];
+            $this->_propertiesLists['save'] =  ['point_nom', 'point_x', 'point_y', 'point_itine_id', 'point_bout_trajet'];
             $this->_propertiesLists['update'] =  $this->_propertiesLists['save'];
             
             $this->verify_me();
@@ -30,5 +30,6 @@
             $this->_data['data'] = $this->$model_name->getByItineraire($itine_id);
             $this->charger_page();
         }
+        
         
     }

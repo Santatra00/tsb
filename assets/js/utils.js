@@ -150,6 +150,13 @@ var utils = {
             const datatype = $(input_class)[index].attributes.getNamedItem('datatype');
             let val =  element.value;
 
+            // integration du checkbox
+            const elementType = $(input_class)[index].attributes.getNamedItem('type');
+            if(elementType!=null && elementType.value=='checkbox'){
+                console.log($(input_class)[index].checked)
+                val = $(input_class)[index].checked;
+            }
+
             if(datatype != null){
                 if(datatype.value == 'int'){
                     val = parseInt(val);
@@ -166,11 +173,22 @@ var utils = {
     },
     setDataForm:function(input_class, data){
         for (let index = 0; index < $(input_class).length; index++) {
-            const name = $(input_class)[index].name;
-            $('[name="'+name+'"]').val(data[name]||'');
-            if(typeof(data[name]) == 'object'){
-                $('[name="'+name+'"]').trigger('change');
+            
+            const element = $(input_class)[index];
+            const elementType = $(input_class)[index].attributes.getNamedItem('type');
+            if(elementType!=null && elementType.value=='checkbox'){
+                const name = element.name;
+                $('[name="'+name+'"]').prop('checked', data[name]=="t");
+                console.log("Changement du checkbox en ", data[name]=="t")
+            }else{
+                const name = $(input_class)[index].name;
+
+                $('[name="'+name+'"]').val(data[name]||'');
+                if(typeof(data[name]) == 'object'){
+                    $('[name="'+name+'"]').trigger('change');
+                }
             }
+            
         }
     },
     resetDataForm:function(input_class){
