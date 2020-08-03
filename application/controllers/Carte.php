@@ -67,5 +67,4 @@
         public function test(){
             print_r(date('H:i',time() - 3600));
         }
-        
-    }   
+    }
